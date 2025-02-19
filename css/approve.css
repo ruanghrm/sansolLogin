@@ -1,0 +1,119 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #ff6600, #ff3300);
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 1200px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.logo {
+    width: 280px;
+}
+
+.header-buttons .btn {
+    background: linear-gradient(90deg, #ff6600, #ff3300);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    margin-left: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.header-buttons .btn:hover {
+    background: linear-gradient(90deg, #ff3300, #cc2900);
+    transform: scale(1.05);
+}
+
+h2 {
+    color: #ff3300;
+    font-size: 26px;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #ff6600;
+    color: white;
+}
+
+.btn-zap {
+    background-color: #25d366;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.btn-zap:hover {
+    background-color: #128c7e;
+}
+
+#pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.btn-pagination {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-pagination:hover {
+    background-color: #0056b3;
+}
+
+#record-count {
+    font-weight: bold;
+    color: #444;
+}
+
+.visualizado-row {
+    background-color: #dddddd !important; 
+    color: #000000;
+}
+
+.visualizado-row td {
+    opacity: 0.7; 
+}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validação de Dados - Empresa</title>
+    <link rel="stylesheet" href="css/approve.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="assets/images/logotipo-sansol-horizontal-1024x279.png" alt="Logo da Empresa" class="logo">
+            <div class="header-buttons">
+                <button id="return-btn" onclick="location.href='admin.html'" class="btn return">Retornar</button>
+                <button onclick="logout()" class="btn logout">Fazer Logout</button>
+            </div>            
+        </header>
+        <main>
+            <h2>Dados para Validação</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome do Cliente</th>
+                        <th>Telefone</th>
+                        <th>Valor da Conta de Luz</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+            </table>
+
+            <div id="pagination">
+                <span id="record-count"></span>
+                <div>
+                    <button id="prev-btn" class="btn-pagination">Anterior</button>
+                    <span id="page-num">Página 1</span>
+                    <button id="next-btn" class="btn-pagination">Próximo</button>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="js/approve.js"></script>
+</body>
+</html>
