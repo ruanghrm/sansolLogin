@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const loadUsers = async () => {
         try {
-            const response = await fetch('http://35.184.186.154:3000/usuarios', {
+            const response = await fetch('https://www.sansolenergiasolar.com.br/api/usuarios', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,

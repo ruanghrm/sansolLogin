@@ -13,19 +13,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentPage = 1;
     const recordsPerPage = 5;
 
-    // ✅ Bloqueio de acesso caso não esteja logado
     if (!token) {
         alert('Acesso não autorizado. Faça login primeiro.');
         window.location.href = 'login.html';
         return;
     }
 
-    // ✅ O botão "Retornar" só some para Vendedor
     if (role === 'vendedor' && returnBtn) {
         returnBtn.style.display = 'none';
     }
 
-    // 🚀 Função para buscar os clientes
     const fetchClientes = async () => {
         try {
             const response = await fetch('https://www.sansolenergiasolar.com.br/api/clientes', {
@@ -43,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // 🎨 Exibição dos clientes com linha acinzentada se "visualizado"
     const displayClientes = () => {
         const tbody = table.querySelector('tbody') || table.appendChild(document.createElement('tbody'));
         tbody.innerHTML = '';
@@ -68,7 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 </td>
             `;
 
-            // ✅ Linha acinzentada caso "visualizado"
             if (cliente.status && cliente.status.trim().toLowerCase() === 'visualizado') {
                 tr.classList.add('visualizado-row');
             }
@@ -81,11 +76,10 @@ document.addEventListener('DOMContentLoaded', () => {
         nextBtn.disabled = end >= clientes.length;
     };
 
-    // 📞 Abre o WhatsApp e marca o cliente como "visualizado"
     window.abrirWhatsApp = async (link, id) => {
         window.open(link, '_blank');
         try {
-            const response = await fetch(`http://35.184.186.154:3000/clientes/${id}/visualizado`, {
+            const response = await fetch(`https://www.sansolenergiasolar.com.br/api/clientes/${id}/visualizado`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
             });
@@ -93,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 const cliente = clientes.find(c => c.id === id);
                 if (cliente) cliente.status = 'visualizado';
-                displayClientes(); // Atualiza a tabela
+                displayClientes(); 
             } else {
                 console.error('Erro ao atualizar status');
             }
