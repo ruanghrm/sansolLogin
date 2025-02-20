@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      const response = await fetch('http://35.184.186.154:3000/login', {
+      const response = await fetch('https://www.sansolenergiasolar.com.br/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

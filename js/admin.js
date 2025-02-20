@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const userId = e.target.getAttribute('data-id');
             if (confirm('Tem certeza que deseja excluir este usuário?')) {
                 try {
-                    const response = await fetch(`http://35.184.186.154:3000/usuarios/${userId}`, {
+                    const response = await fetch(`https://www.sansolenergiasolar.com.br/api/usuarios/${userId}`, {
                         method: 'DELETE',
                         headers: {
                             'Authorization': `Bearer ${token}`,

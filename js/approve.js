@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 🚀 Função para buscar os clientes
     const fetchClientes = async () => {
         try {
-            const response = await fetch('http://35.184.186.154:3000/clientes', {
+            const response = await fetch('https://www.sansolenergiasolar.com.br/api/clientes', {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 

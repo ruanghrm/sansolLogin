@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('📤 Dados a serem enviados:', userData);
   
       try {
-        const response = await fetch('http://35.184.186.154:3000/usuarios', {
+        const response = await fetch('https://www.sansolenergiasolar.com.br/api/usuarios', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
