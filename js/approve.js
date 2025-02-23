@@ -40,6 +40,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const formatDate = (dateString) => {
+        const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+        const date = new Date(dateString);
+        return new Intl.DateTimeFormat('pt-BR', options).format(date);
+    };
+
     const displayClientes = () => {
         const tbody = table.querySelector('tbody') || table.appendChild(document.createElement('tbody'));
         tbody.innerHTML = '';
@@ -50,12 +56,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         clientesPagina.forEach(cliente => {
             const valorConta = cliente.contaLuz.trim().startsWith('R$') ? cliente.contaLuz : `R$ ${cliente.contaLuz}`;
+            const dataCadastro = formatDate(cliente.createdAt);
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${cliente.nome}</td>
+                <td>${cliente.vendedor}</td>
                 <td>${cliente.numero}</td>
                 <td>${valorConta}</td>
+                <td>${dataCadastro}</td>
                 <td>${cliente.status}</td>
                 <td>
                     <button class="btn-zap" onclick="abrirWhatsApp('${cliente.whatsappLink}', '${cliente.id}')">
@@ -96,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // 🔄 Paginação
     prevBtn.addEventListener('click', () => {
         if (currentPage > 1) {
             currentPage--;
@@ -111,13 +119,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 🚪 Logout
     window.logout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('role');
         window.location.href = 'login.html';
     };
 
-    // 🚀 Inicialização
     fetchClientes();
 });
