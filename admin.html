@@ -29,11 +29,40 @@
                             <th>Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="userTableBody">
-                    </tbody>
+                    <tbody id="userTableBody"></tbody>
                 </table>
             </section>
         </main>
+    </div>
+
+    <!-- Popup de Edição com campo de senha -->
+    <div id="editPopup" class="popup hidden">
+        <div class="popup-content">
+            <span id="closePopup" class="close">&times;</span>
+            <h2>Editar Usuário</h2>
+            <form id="editUserForm">
+                <div class="input-group">
+                    <label for="editName">Nome</label>
+                    <input type="text" id="editName" name="name" required>
+                </div>
+                <div class="input-group">
+                    <label for="editEmail">E-mail</label>
+                    <input type="email" id="editEmail" name="email" required>
+                </div>
+                <div class="input-group">
+                    <label for="editPassword">Senha (Deixe em branco para não alterar)</label>
+                    <input type="password" id="editPassword" name="password">
+                </div>
+                <div class="input-group">
+                    <label for="editRole">Perfil</label>
+                    <select id="editRole" name="role" required>
+                        <option value="Administrador">Administrador</option>
+                        <option value="Vendedor">Vendedor</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">Salvar Alterações</button>
+            </form>
+        </div>
     </div>
 
     <script src="js/admin.js"></script>

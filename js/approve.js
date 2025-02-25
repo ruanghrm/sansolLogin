@@ -41,17 +41,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const applyFilters = () => {
-        const dateFilter = document.getElementById('filter-date').value;
-        const originFilter = document.getElementById('filter-origin').value.toLowerCase(); // Ignorando maiúsculas/minúsculas
+    const deleteCliente = async (id) => {
+        if (confirm('Tem certeza que deseja excluir este cliente?')) {
+            try {
+                const response = await fetch(`https://www.sansolenergiasolar.com.br/api/clientes/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                });
 
-        const filteredClientes = clientes.filter(cliente => {
-            const matchDate = dateFilter ? cliente.createdAt.startsWith(dateFilter) : true;
-            const matchOrigin = originFilter ? cliente.origem.toLowerCase().includes(originFilter) : true;
-            return matchDate && matchOrigin;
-        });
-
-        displayClientes(filteredClientes);
+                if (response.ok) {
+                    clientes = clientes.filter(cliente => cliente.id !== id);
+                    displayClientes();
+                    alert('Cliente removido com sucesso.');
+                } else {
+                    alert('Falha ao remover o cliente.');
+                }
+            } catch (error) {
+                console.error('Erro ao excluir cliente:', error);
+            }
+        }
     };
 
     const formatDate = (dateString) => {
@@ -85,12 +93,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         <i class="fab fa-whatsapp"></i> WhatsApp
                     </button>
                 </td>
+                <td>
+                    <button class="btn-delete" onclick="deleteCliente('${cliente.id}')">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </td>
             `;
 
             if (cliente.status && cliente.status.trim().toLowerCase() === 'visualizado') {
                 tr.classList.add('visualizado-row');
             }
-            console.log(cliente.vendedor)
 
             tbody.appendChild(tr);
         });
@@ -100,27 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
         nextBtn.disabled = end >= clientesToDisplay.length;
     };
 
-    document.getElementById('apply-filters').addEventListener('click', applyFilters);
-
-    window.abrirWhatsApp = async (link, id) => {
-        window.open(link, '_blank');
-        try {
-            const response = await fetch(`https://www.sansolenergiasolar.com.br/api/clientes/${id}/visualizado`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` },
-            });
-
-            if (response.ok) {
-                const cliente = clientes.find(c => c.id === id);
-                if (cliente) cliente.status = 'visualizado';
-                displayClientes(); 
-            } else {
-                console.error('Erro ao atualizar status');
-            }
-        } catch (error) {
-            console.error('Erro:', error);
-        }
-    };
+    window.deleteCliente = deleteCliente;
 
     prevBtn.addEventListener('click', () => {
         if (currentPage > 1) {
@@ -136,11 +128,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    window.logout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('role');
-        window.location.href = 'login.html';
-    };
-
     fetchClientes();
 });
+
+async function fetchPageViews() {
+
+    const response = await fetch('https://api.exemplo.com/analytics/visitas', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer YOUR_ACCESS_TOKEN`
+      }
+    });
+
+    const data = await response.json();
+
+    const pageViews = data.pageViews;
+
+    document.getElementById('visitCount').innerText = pageViews;
+  }
+
+  window.onload = fetchPageViews;

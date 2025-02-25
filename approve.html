@@ -5,9 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sansol - Validação de Dados</title>
     <link rel="stylesheet" href="css/approve.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-TRKBJF7G');</script>
+    <!-- End Google Tag Manager -->
 </head>
 <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRKBJF7G"
+     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <div id="trafficCounter" style="position: fixed; top: 10px; right: 10px; padding: 10px; background-color: rgba(0,0,0,0.7); color: white; font-size: 14px; border-radius: 5px;">
+        Visitas: <span id="visitCount">Carregando...</span>
+    </div>
     <div class="container">
         <header>
             <img src="assets/images/logotipo-sansol-horizontal-1024x279.png" alt="Logo da Empresa" class="logo">
@@ -38,6 +55,7 @@
                         <th>Data do cadastro</th>
                         <th>Status</th>
                         <th></th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
             </table>

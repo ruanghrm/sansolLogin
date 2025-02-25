@@ -212,6 +212,18 @@ tr:hover {
     box-shadow: 0 6px 16px rgba(255, 51, 0, 0.4);
 }
 
+.btn-delete {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: red;
+    font-size: 18px;
+}
+
+.btn-delete:hover {
+    color: darkred;
+}
+
 @media (max-width: 768px) {
     body {
         padding: 10px;
