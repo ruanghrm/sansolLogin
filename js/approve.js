@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
     const returnBtn = document.getElementById('return-btn');
+    const acoes = document.getElementById('acoes');
 
     const table = document.querySelector('table');
     const recordCount = document.getElementById('record-count');
@@ -21,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (role === 'vendedor' && returnBtn) {
         returnBtn.style.display = 'none';
+        acoes.style.display = 'none';
     }
 
     const fetchClientes = async () => {
@@ -94,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </button>
                 </td>
                 <td>
-                    <button class="btn-delete" onclick="deleteCliente('${cliente.id}')">
+                    <button class="btn-delete" style="${role === 'vendedor' ? 'display: none;' : ''}" onclick="deleteCliente('${cliente.id}')">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </td>
@@ -130,6 +132,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fetchClientes();
 });
+
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('name');
+    localStorage.removeItem('phone');
+    alert("Você foi deslogado.");
+
+    window.location.href = 'login.html';
+}
+
 
 async function fetchPageViews() {
 
