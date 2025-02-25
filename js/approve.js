@@ -43,6 +43,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    window.addEventListener('DOMContentLoaded', () => {
+        const filterDateInput = document.getElementById('filter-date');
+        const filterOriginInput = document.getElementById('filter-origin');
+        const applyFiltersBtn = document.getElementById('apply-filters');
+
+        // Função de filtro
+        applyFiltersBtn.addEventListener('click', () => {
+            const filterDate = filterDateInput.value;
+            const filterOrigin = filterOriginInput.value.toLowerCase().trim();
+
+            console.log(`Filtro de Data: ${filterDate}, Filtro de Origem: ${filterOrigin}`); 
+
+            const clientesFiltrados = clientes.filter(cliente => {
+                const dataCliente = cliente.createdAt ? cliente.createdAt.split('T')[0] : '';
+                const origemCliente = cliente.origem ? cliente.origem.toLowerCase() : '';
+
+                const filtraData = filterDate ? dataCliente === filterDate : true;
+                const filtraOrigem = filterOrigin ? origemCliente.includes(filterOrigin) : true;
+
+                return filtraData && filtraOrigem;
+            });
+
+            console.log(`Clientes filtrados:`, clientesFiltrados); 
+
+            displayClientes(clientesFiltrados);
+        });
+    });
+
     const deleteCliente = async (id) => {
         if (confirm('Tem certeza que deseja excluir este cliente?')) {
             try {
@@ -144,20 +172,46 @@ function logout() {
 }
 
 
-async function fetchPageViews() {
+// async function fetchPageViews() {
 
-    const response = await fetch('https://api.exemplo.com/analytics/visitas', {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer YOUR_ACCESS_TOKEN`
-      }
-    });
+//     const response = await fetch('https://api.exemplo.com/analytics/visitas', {
+//       method: 'GET',
+//       headers: {
+//         'Authorization': `Bearer YOUR_ACCESS_TOKEN`
+//       }
+//     });
 
-    const data = await response.json();
+//     const data = await response.json();
 
-    const pageViews = data.pageViews;
+//     const pageViews = data.pageViews;
 
-    document.getElementById('visitCount').innerText = pageViews;
-  }
+//     document.getElementById('visitCount').innerText = pageViews;
+//   }
 
-  window.onload = fetchPageViews;
+//   window.onload = fetchPageViews;
+
+async function abrirWhatsApp(link, id) {
+    const token = localStorage.getItem('token');
+
+    try {
+        window.open(link, '_blank');
+
+        const response = await fetch(`https://www.sansolenergiasolar.com.br/api/clientes/${id}/visualizado`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+            alert('Status do cliente atualizado para "visualizado".');
+            // Atualiza a lista de clientes automaticamente
+            fetchClientes();
+        } else {
+            alert('Falha ao atualizar o status do cliente.');
+        }
+    } catch (error) {
+        // console.error('Erro ao abrir o WhatsApp ou atualizar status:', error);
+        // alert('Ocorreu um erro ao processar a ação.');
+    }
+}
+
+
