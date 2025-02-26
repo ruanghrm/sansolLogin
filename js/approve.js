@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextBtn = document.getElementById('next-btn');
 
     let clientes = [];
+    let clientesFiltrados = [];
     let currentPage = 1;
     const recordsPerPage = 5;
 
@@ -34,6 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('Erro ao buscar clientes');
 
             clientes = await response.json();
+            clientesFiltrados = clientes;
+            
             recordCount.textContent = `Total de registros: ${clientes.length}`;
 
             displayClientes();
@@ -54,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             console.log(`Filtro de Data: ${filterDate}, Filtro de Origem: ${filterOrigin}`); 
 
-            const clientesFiltrados = clientes.filter(cliente => {
+            clientesFiltrados = clientes.filter(cliente => {
                 const dataCliente = cliente.createdAt ? cliente.createdAt.split('T')[0] : '';
                 const origemCliente = cliente.origem ? cliente.origem.toLowerCase() : '';
 
@@ -83,8 +86,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (response.ok) {
                     clientes = clientes.filter(cliente => cliente.id !== id);
-                    displayClientes();
+                    clientesFiltrados = clientesFiltrados.filter(cliente => cliente.id !== id);
+
                     alert('Cliente removido com sucesso.');
+                    displayClientes();
                 } else {
                     alert('Falha ao remover o cliente.');
                 }
@@ -100,13 +105,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return new Intl.DateTimeFormat('pt-BR', options).format(date);
     };
 
-    const displayClientes = (clientesToDisplay = clientes) => {
+    const displayClientes = () => {
         const tbody = table.querySelector('tbody') || table.appendChild(document.createElement('tbody'));
         tbody.innerHTML = '';
 
         const start = (currentPage - 1) * recordsPerPage;
         const end = start + recordsPerPage;
-        const clientesPagina = clientesToDisplay.slice(start, end);
+        const clientesPagina = clientesFiltrados.slice(start, end);
 
         clientesPagina.forEach(cliente => {
             const valorConta = cliente.contaLuz.trim().startsWith('R$') ? cliente.contaLuz : `R$ ${cliente.contaLuz}`;
@@ -139,11 +144,11 @@ document.addEventListener('DOMContentLoaded', () => {
             tbody.appendChild(tr);
         });
 
-        recordCount.textContent = `Total de registros: ${clientesToDisplay.length}`
+        recordCount.textContent = `Total de registros: ${clientesFiltrados.length}`
 
         pageNum.textContent = `Página ${currentPage}`;
         prevBtn.disabled = currentPage === 1;
-        nextBtn.disabled = end >= clientesToDisplay.length;
+        nextBtn.disabled = end >= clientesFiltrados.length;
     };
 
     window.deleteCliente = deleteCliente;
@@ -156,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     nextBtn.addEventListener('click', () => {
-        if ((currentPage * recordsPerPage) < clientes.length) {
+        if ((currentPage * recordsPerPage) < clientesFiltrados.length) {
             currentPage++;
             displayClientes();
         }
@@ -207,7 +212,6 @@ async function abrirWhatsApp(link, id) {
 
         if (response.ok) {
             alert('Status do cliente atualizado para "visualizado".');
-            // Atualiza a lista de clientes automaticamente
             fetchClientes();
         } else {
             alert('Falha ao atualizar o status do cliente.');
