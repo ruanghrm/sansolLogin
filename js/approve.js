@@ -48,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const filterOriginInput = document.getElementById('filter-origin');
         const applyFiltersBtn = document.getElementById('apply-filters');
 
-        // Função de filtro
         applyFiltersBtn.addEventListener('click', () => {
             const filterDate = filterDateInput.value;
             const filterOrigin = filterOriginInput.value.toLowerCase().trim();
@@ -67,6 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             console.log(`Clientes filtrados:`, clientesFiltrados); 
 
+            recordCount.textContent = `Total de registros: ${clientesFiltrados.length}`
+
+            currentPage = 1;
             displayClientes(clientesFiltrados);
         });
     });
@@ -136,6 +138,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             tbody.appendChild(tr);
         });
+
+        recordCount.textContent = `Total de registros: ${clientesToDisplay.length}`
 
         pageNum.textContent = `Página ${currentPage}`;
         prevBtn.disabled = currentPage === 1;
