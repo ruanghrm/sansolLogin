@@ -42,6 +42,30 @@ header {
     transform: scale(1.05);
 }
 
+#excel {
+    border: none;
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin: 10px;
+    background-color: green;
+    color: white;
+    font-weight: 500;
+    font-size: 15px;
+    height: 25px;
+    width: 150px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#excel:hover {
+    background-color: #11b44d;
+    transform: scale(1.05);
+}
+
 .header-buttons .btn {
     background: linear-gradient(90deg, #ff6600, #ff3300);
     color: white;

@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const role = localStorage.getItem('role');
     const returnBtn = document.getElementById('return-btn');
     const acoes = document.getElementById('acoes');
+    const excel = document.getElementById('excel');
 
     const table = document.querySelector('table');
     const recordCount = document.getElementById('record-count');
@@ -26,6 +27,38 @@ document.addEventListener('DOMContentLoaded', () => {
         acoes.style.display = 'none';
     }
 
+
+    excel.addEventListener('click', async () => {
+        const token = localStorage.getItem('token');
+    
+        try {
+            const response = await fetch('https://www.sansolenergiasolar.com.br/api/clientes/excel', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Erro ao buscar o arquivo: ${response.status}`);
+            }
+    
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'dados.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            alert('Erro ao baixar o arquivo.');
+            console.error(error);
+        }
+    });
+            
+
     const fetchClientes = async () => {
         try {
             const response = await fetch('https://www.sansolenergiasolar.com.br/api/clientes', {
@@ -36,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             clientes = await response.json();
             clientesFiltrados = clientes;
-            
+
             recordCount.textContent = `Total de registros: ${clientes.length}`;
 
             displayClientes();
@@ -55,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const filterDate = filterDateInput.value;
             const filterOrigin = filterOriginInput.value.toLowerCase().trim();
 
-            console.log(`Filtro de Data: ${filterDate}, Filtro de Origem: ${filterOrigin}`); 
+            console.log(`Filtro de Data: ${filterDate}, Filtro de Origem: ${filterOrigin}`);
 
             clientesFiltrados = clientes.filter(cliente => {
                 const dataCliente = cliente.createdAt ? cliente.createdAt.split('T')[0] : '';
@@ -67,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return filtraData && filtraOrigem;
             });
 
-            console.log(`Clientes filtrados:`, clientesFiltrados); 
+            console.log(`Clientes filtrados:`, clientesFiltrados);
 
             recordCount.textContent = `Total de registros: ${clientesFiltrados.length}`
 
