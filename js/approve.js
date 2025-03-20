@@ -64,20 +64,33 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('https://www.sansolenergiasolar.com.br/api/clientes', {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
-
+    
             if (!response.ok) throw new Error('Erro ao buscar clientes');
-
+    
             clientes = await response.json();
             clientesFiltrados = clientes;
-
+    
+            const visualizadosCount = clientes.filter(cliente => 
+                cliente.status && cliente.status.trim().toLowerCase() === 'visualizado'
+            ).length;
+    
             recordCount.textContent = `Total de registros: ${clientes.length}`;
-
+    
+            let visualizadosSpan = document.getElementById('visualizadosCount');
+            if (!visualizadosSpan) {
+                visualizadosSpan = document.createElement('span');
+                visualizadosSpan.id = 'visualizadosCount';
+                recordCount.parentNode.appendChild(visualizadosSpan);
+            }
+            visualizadosSpan.textContent = `Visualizados: ${visualizadosCount}`;
+    
             displayClientes();
         } catch (error) {
             console.error('Erro:', error);
             alert('Erro ao carregar os dados dos clientes.');
         }
     };
+    
 
     window.addEventListener('DOMContentLoaded', () => {
         const filterDateInput = document.getElementById('filter-date');
