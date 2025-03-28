@@ -146,10 +146,18 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const formatDate = (dateString) => {
-        const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+        const options = {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        };
         const date = new Date(dateString);
         return new Intl.DateTimeFormat('pt-BR', options).format(date);
     };
+    
 
     const displayClientes = () => {
         const tbody = table.querySelector('tbody') || table.appendChild(document.createElement('tbody'));
