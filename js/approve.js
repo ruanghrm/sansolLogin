@@ -180,6 +180,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${dataCadastro}</td>
                 <td>${cliente.status}</td>
                 <td>
+                    ${
+                        cliente.localizacao && cliente.localizacao.latitude && cliente.localizacao.longitude
+                        ? `<a href="https://www.google.com/maps?q=${cliente.localizacao.latitude},${cliente.localizacao.longitude}" 
+                            target="_blank" 
+                            title="Ver no mapa">
+                                <i class="fas fa-map-marker-alt" style="color: #1e90ff; font-size: 18px;"></i>
+                        </a>`
+                        : '<span style="color: #888;">Nulo</span>'
+                    }
+                </td>
+                </td>
+                <td>
                     <button class="btn-zap" onclick="abrirWhatsApp('${cliente.whatsappLink}', '${cliente.id}')">
                         <i class="fab fa-whatsapp"></i> WhatsApp
                     </button>
@@ -189,12 +201,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </td>
+            </tr>
             `;
 
             if (cliente.status && cliente.status.trim().toLowerCase() === 'visualizado') {
                 tr.classList.add('visualizado-row');
             }
 
+            console.log(cliente.localizacao)
             tbody.appendChild(tr);
         });
 

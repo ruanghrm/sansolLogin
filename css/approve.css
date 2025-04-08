@@ -21,10 +21,10 @@ body {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.container:hover {
+/* .container:hover {
     transform: translateY(-5px);
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
-}
+} */
 
 header {
     display: flex;
@@ -43,28 +43,33 @@ header {
 }
 
 #excel {
-    border: none;
-    display: flex;
     position: fixed;
-    top: 0;
-    left: 0;
-    margin: 10px;
-    background-color: green;
-    color: white;
-    font-weight: 500;
-    font-size: 15px;
-    height: 25px;
-    width: 150px;
+    top: 20px;
+    left: 20px;
+    margin: 0;
+    padding: 0;
+    height: 60px;
+    width: 60px;
+    background: linear-gradient(145deg, #1e7e34, #28a745);
+    border: none;
+    border-radius: 50%;
+    display: flex;
     justify-content: center;
     align-items: center;
+    color: white;
+    font-size: 22px;
     cursor: pointer;
-    border-radius: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    z-index: 1000;
 }
 
 #excel:hover {
-    background-color: #11b44d;
-    transform: scale(1.05);
+    background: linear-gradient(145deg, #28a745, #34c759);
+    transform: scale(1.1);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
 }
+
 
 .header-buttons .btn {
     background: linear-gradient(90deg, #ff6600, #ff3300);
