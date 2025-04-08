@@ -59,9 +59,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
             
 
-    const fetchClientes = async () => {
+    const fetchClientes = async (pagina = 1, limite = 15) => {
         try {
-            const response = await fetch('https://www.sansolenergiasolar.com.br/api/clientes', {
+            const response = await fetch(`https://www.sansolenergiasolar.com.br/api/clientes?page=${pagina}&limit=${limite}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
     
@@ -70,26 +70,49 @@ document.addEventListener('DOMContentLoaded', () => {
             clientes = await response.json();
             clientesFiltrados = clientes;
     
-            const visualizadosCount = clientes.filter(cliente => 
+            const visualizadosCount = clientes.filter(cliente =>
                 cliente.status && cliente.status.trim().toLowerCase() === 'visualizado'
+            ).length;
+    
+            const pendentesCount = clientes.filter(cliente =>
+                cliente.status && cliente.status.trim().toLowerCase() === 'pendente'
             ).length;
     
             recordCount.textContent = `Total de registros: ${clientes.length}`;
     
+            let contadorWrapper = document.getElementById('contadorWrapper');
+            if (!contadorWrapper) {
+                contadorWrapper = document.createElement('div');
+                contadorWrapper.id = 'contadorWrapper';
+                contadorWrapper.style.display = 'flex';
+                contadorWrapper.style.flexDirection = 'column';
+                contadorWrapper.style.marginTop = '5px';
+                recordCount.parentNode.appendChild(contadorWrapper);
+            }
+
             let visualizadosSpan = document.getElementById('visualizadosCount');
             if (!visualizadosSpan) {
                 visualizadosSpan = document.createElement('span');
                 visualizadosSpan.id = 'visualizadosCount';
-                recordCount.parentNode.appendChild(visualizadosSpan);
+                contadorWrapper.appendChild(visualizadosSpan);
             }
             visualizadosSpan.textContent = `Visualizados: ${visualizadosCount}`;
-    
+
+            let pendentesSpan = document.getElementById('pendentesCount');
+            if (!pendentesSpan) {
+                pendentesSpan = document.createElement('span');
+                pendentesSpan.id = 'pendentesCount';
+                contadorWrapper.appendChild(pendentesSpan);
+            }
+            pendentesSpan.textContent = `Pendentes: ${pendentesCount}`;
+
             displayClientes();
         } catch (error) {
             console.error('Erro:', error);
             alert('Erro ao carregar os dados dos clientes.');
         }
     };
+    
     
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -208,7 +231,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 tr.classList.add('visualizado-row');
             }
 
-            console.log(cliente.localizacao)
             tbody.appendChild(tr);
         });
 

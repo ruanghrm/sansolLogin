@@ -26,6 +26,13 @@ body {
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
 } */
 
+#visualizadosCount, #pendentesCount {
+    display: block;
+    margin-top: 5px;
+    font-size: 14px;
+    color: #444;
+}
+
 header {
     display: flex;
     justify-content: space-between;
