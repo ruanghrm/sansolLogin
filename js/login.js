@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('form');
 
+  // Não remover ou ler 'usuarioLogado' aqui no carregamento para evitar logs errados
+
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
@@ -25,9 +27,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (response.ok) {
         alert('✅ Login realizado com sucesso!');
+
+        // Armazenar dados no localStorage
         localStorage.setItem('token', data.token);
         localStorage.setItem('role', data.role);
 
+        const nomeUsuario = data.nome || email;
+        localStorage.setItem('nome', nomeUsuario);
+
+        // Armazena objeto usuarioLogado para facilitar leitura depois
+        localStorage.setItem('usuarioLogado', JSON.stringify({ nome: nomeUsuario }));
+
+        console.log('Usuário logado:', nomeUsuario); // Log só após login bem-sucedido
+
+        // Redireciona conforme perfil
         if (data.role === 'admin') {
           window.location.href = 'admin.html';
         } else if (data.role === 'vendedor') {
