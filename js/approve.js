@@ -1,28 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role');
-    const usuarioLogado = JSON.parse(localStorage.getItem('usuarioLogado'));
-
-    const returnBtn = document.getElementById('return-btn');
-    const acoes = document.getElementById('acoes');
-    const excel = document.getElementById('excel');
-
-    const table = document.querySelector('table');
-    const recordCount = document.getElementById('record-count');
-    const pageNum = document.getElementById('page-num');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-
-    const filterDateInput = document.getElementById('filter-date');
-    const filterOriginInput = document.getElementById('filter-origin');
-    const applyFiltersBtn = document.getElementById('apply-filters');
-
-    let clientes = [];
-    let clientesFiltrados = [];
+    const API_BASE_URL = 'https://backend.sansolenergiasolar.com.br/api/v1';
+    const RECORDS_PER_PAGE = 5; // agora 5 registros por página
     let currentPage = 1;
-    const recordsPerPage = 5;
+    let clientes = [];
+    let pagination = {};
 
-    const safeLower = (v) => (v ?? '').toString().trim().toLowerCase();
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user')) || {};
+    const { role, nome: nomeUsuario } = user;
 
     if (!token) {
         alert('Acesso não autorizado. Faça login primeiro.');
@@ -30,47 +15,26 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    async function getNomeVendedorPorEmail(emailUsuario) {
-        try {
-            const response = await fetch('https://www.sansolenergiasolar.com.br/api/vendedores', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+    // Elementos do DOM
+    const returnBtn = document.getElementById('return-btn');
+    const excel = document.getElementById('excel');
+    const table = document.querySelector('table');
+    const tableBody = table.querySelector('tbody') || table.appendChild(document.createElement('tbody'));
+    const recordCount = document.getElementById('record-count');
+    const pageNum = document.getElementById('page-num');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const filterDateInput = document.getElementById('filter-date');
+    const filterOriginInput = document.getElementById('filter-origin');
+    const applyFiltersBtn = document.getElementById('apply-filters');
+    const registerClientBtn = document.getElementById('register-client-btn');
+    const logoutBtn = document.getElementById('logout-btn');
 
-            if (!response.ok) throw new Error('Erro ao buscar vendedores');
+    const safeLower = (v) => (v ?? '').toString().trim().toLowerCase();
 
-            const vendedores = await response.json();
-
-            console.log('Resposta da API vendedores:', vendedores);
-
-            if (!Array.isArray(vendedores)) {
-                console.warn('Resposta dos vendedores não é um array:', vendedores);
-                return null;
-            }
-
-            const vendedorEncontrado = vendedores.find(v => {
-                if (typeof v === 'string') {
-                    return v.toLowerCase() === emailUsuario.toLowerCase();
-                } else if (typeof v === 'object' && v !== null) {
-                    return (v.email?.toLowerCase() === emailUsuario.toLowerCase());
-                }
-                return false;
-            });
-
-            console.log('Vendedor encontrado:', vendedorEncontrado);
-            if (vendedorEncontrado) {
-                if (typeof vendedorEncontrado === 'string') return vendedorEncontrado;
-                if (typeof vendedorEncontrado === 'object') return vendedorEncontrado.nome || vendedorEncontrado.email || null;
-            }
-            return null;
-        } catch (error) {
-            console.error('Erro ao obter vendedores:', error);
-            return null;
-        }
-    }
-
-    // Função para criar ou atualizar os contadores de status
-    const criarOuAtualizarContadores = (visualizadosCount, pendentesCount, total) => {
-        recordCount.textContent = `Total de registros: ${total}`;
+    const updateStatusCounters = (clientesList) => {
+        const visualizadosCount = clientesList.filter(c => safeLower(c?.status) === 'visualizado').length;
+        const pendentesCount = clientesList.filter(c => safeLower(c?.status) === 'pendente').length;
 
         let contadorWrapper = document.getElementById('contadorWrapper');
         if (!contadorWrapper) {
@@ -99,50 +63,24 @@ document.addEventListener('DOMContentLoaded', () => {
         pendentesSpan.textContent = `Pendentes: ${pendentesCount}`;
     };
 
-    // Função para buscar clientes e aplicar filtro se for vendedor
-    const fetchClientesComFiltro = async () => {
+    /** Busca clientes da API usando paginação do backend */
+    const fetchClientes = async (page = 1) => {
         try {
-            let nomeVendedor = null;
-
-            if (role === 'vendedor') {
-                nomeVendedor = await getNomeVendedorPorEmail(usuarioLogado.nome);
-                if (!nomeVendedor) {
-                    console.warn('Nome do vendedor não encontrado, usando email para filtro');
-                    nomeVendedor = usuarioLogado.nome; // fallback para email mesmo
-                }
-            }
-
-            const response = await fetch(`https://www.sansolenergiasolar.com.br/api/clientes?page=1&limit=1000`, {
+            const response = await fetch(`${API_BASE_URL}/clientes?page=${page}&per_page=${RECORDS_PER_PAGE}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 
             if (!response.ok) throw new Error('Erro ao buscar clientes');
 
-            clientes = await response.json();
+            const data = await response.json();
 
-            if (!Array.isArray(clientes)) {
-                console.error('A API não retornou um array. Valor retornado:', clientes);
-                clientes = [];
-            }
+            // ⚡ Ajuste conforme instrução do backend
+            clientes = data.data || []; // antes era data.clientes
+            pagination = data.pagination || {}; // ajustar se a paginação mudou de lugar
+            currentPage = pagination.page || page;
 
-            if (role === 'vendedor') {
-                const nomeVendedorLower = safeLower(nomeVendedor);
-                clientesFiltrados = clientes.filter(cliente => safeLower(cliente?.origem) === nomeVendedorLower);
-            } else {
-                clientesFiltrados = clientes;
-            }
+            console.log('📦 Clientes recebidos do backend:', clientes);
 
-            const visualizadosCount = clientesFiltrados.filter(c =>
-                safeLower(c?.status) === 'visualizado'
-            ).length;
-
-            const pendentesCount = clientesFiltrados.filter(c =>
-                safeLower(c?.status) === 'pendente'
-            ).length;
-
-            criarOuAtualizarContadores(visualizadosCount, pendentesCount, clientesFiltrados.length);
-
-            currentPage = 1;
             displayClientes();
         } catch (error) {
             console.error('Erro:', error);
@@ -150,231 +88,153 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Função para deletar cliente
-    const deleteCliente = async (id) => {
-        if (confirm('Tem certeza que deseja excluir este cliente?')) {
-            try {
-                const response = await fetch(`https://www.sansolenergiasolar.com.br/api/clientes/${id}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` },
-                });
-
-                if (response.ok) {
-                    clientes = clientes.filter(cliente => cliente.id !== id);
-                    clientesFiltrados = clientesFiltrados.filter(cliente => cliente.id !== id);
-
-                    alert('Cliente removido com sucesso.');
-                    displayClientes();
-                } else {
-                    alert('Falha ao remover o cliente.');
-                }
-            } catch (error) {
-                console.error('Erro ao excluir cliente:', error);
-            }
-        }
-    };
-
-    // Formata datas no padrão brasileiro
-    const formatDate = (dateString) => {
-        if (!dateString) return '-';
-        const options = {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
-        };
-        const d = new Date(dateString);
-        if (isNaN(d.getTime())) return '-';
-        return new Intl.DateTimeFormat('pt-BR', options).format(d);
-    };
-
-    // Exibe os clientes na tabela com paginação
+    /** Renderiza clientes na tabela */
     const displayClientes = () => {
-        const tbody = table.querySelector('tbody') || table.appendChild(document.createElement('tbody'));
-        tbody.innerHTML = '';
+        tableBody.innerHTML = '';
 
-        const start = (currentPage - 1) * recordsPerPage;
-        const end = start + recordsPerPage;
-        const clientesPagina = clientesFiltrados.slice(start, end);
-
-        clientesPagina.forEach(cliente => {
-            let valorConta = (cliente?.contaLuz ?? '').toString();
-            if (valorConta && !valorConta.startsWith('R$')) {
-                valorConta = `R$ ${valorConta}`;
-            }
-
-            const dataCadastro = formatDate(cliente?.createdAt);
+        clientes.forEach(cliente => {
+            const valorConta = cliente?.contaLuz ? `R$ ${cliente.contaLuz.replace('R$', '').trim()}` : '-';
+            const dataCadastro = cliente?.createdAt ? new Date(cliente.createdAt).toLocaleString('pt-BR') : '-';
 
             const tr = document.createElement('tr');
+            tr.dataset.clientId = cliente.id;
+            tr.dataset.whatsappLink = cliente.whatsappLink;
+
             tr.innerHTML = `
-                <td>${cliente?.nome ?? '-'}</td>
-                <td>${cliente?.origem ?? '-'}</td>
-                <td>${cliente?.numero ?? '-'}</td>
-                <td>${valorConta || '-'}</td>
+                <td>${cliente.nome ?? '-'}</td>
+                <td>${cliente.origem ?? '-'}</td>
+                <td>${cliente.numero ?? '-'}</td>
+                <td>${valorConta}</td>
                 <td>${dataCadastro}</td>
-                <td>${cliente?.status ?? '-'}</td>
+                <td>${cliente.status ?? '-'}</td>
                 <td>
-                    ${
-                        cliente?.localizacao?.latitude && cliente?.localizacao?.longitude
-                        ? `<a href="https://www.google.com/maps?q=${cliente.localizacao.latitude},${cliente.localizacao.longitude}" 
-                            target="_blank" 
-                            title="Ver no mapa">
-                                <i class="fas fa-map-marker-alt" style="color: #1e90ff; font-size: 18px;"></i>
-                        </a>`
-                        : '<span style="color: #888;">Nulo</span>'
-                    }
+                    ${cliente.latitude && cliente.longitude
+                        ? `<a href="https://www.google.com/maps?q=${cliente.latitude},${cliente.longitude}" target="_blank">
+                               <i class="fas fa-map-marker-alt" style="color: #1e90ff;"></i>
+                           </a>`
+                        : '<span style="color: #888;">Nulo</span>'}
                 </td>
-                <td>
-                    <button class="btn-zap" onclick="abrirWhatsApp('${cliente?.whatsappLink ?? '#'}', '${cliente?.id ?? ''}')">
-                        <i class="fab fa-whatsapp"></i> WhatsApp
-                    </button>
-                </td>
-                <td>
-                    <button class="btn-delete" style="${role === 'vendedor' ? 'display: none;' : ''}" onclick="deleteCliente('${cliente?.id ?? ''}')">
+                <td><button class="btn-zap"><i class="fab fa-whatsapp"></i> WhatsApp</button></td>
+                <td><button class="btn-delete" style="${role === 'vendedor' ? 'display: none;' : ''}">
+                <td><button class="btn-delete ${role === 'vendedor' ? 'hidden-for-vendedor' : ''}">
                         <i class="fas fa-trash-alt"></i>
-                    </button>
-                </td>
+                    </button></td>
             `;
 
-            if (safeLower(cliente?.status) === 'visualizado') {
-                tr.classList.add('visualizado-row');
-            }
-
-            tbody.appendChild(tr);
+            if (safeLower(cliente.status) === 'visualizado') tr.classList.add('visualizado-row');
+            tableBody.appendChild(tr);
         });
 
-        recordCount.textContent = `Total de registros: ${clientesFiltrados.length}`;
-        pageNum.textContent = `Página ${currentPage}`;
-        prevBtn.disabled = currentPage === 1;
-        nextBtn.disabled = end >= clientesFiltrados.length;
+        recordCount.textContent = `Total de registros nesta página: ${clientes.length} | Total geral: ${pagination.total || '-'}`;
+        pageNum.textContent = `Página ${currentPage} de ${pagination.total_pages || '-'}`;
+
+        prevBtn.disabled = !pagination.has_prev;
+        nextBtn.disabled = !pagination.has_next;
+
+        updateStatusCounters(clientes);
     };
 
-    // Eventos de paginação
-    if (prevBtn) {
-        prevBtn.addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                displayClientes();
-            }
-        });
-    }
+    const applyFilters = () => {
+        alert('Filtros ainda precisam ser implementados no backend para funcionar corretamente com paginação.');
+    };
 
-    if (nextBtn) {
-        nextBtn.addEventListener('click', () => {
-            if ((currentPage * recordsPerPage) < clientesFiltrados.length) {
-                currentPage++;
-                displayClientes();
-            }
-        });
-    }
+    const logout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        alert("Você foi deslogado.");
+        window.location.href = 'login.html';
+    };
 
-    // Filtros manuais (apenas se não for vendedor)
-    if (applyFiltersBtn && role !== 'vendedor') {
-        applyFiltersBtn.addEventListener('click', () => {
-            const filterDate = filterDateInput?.value;
-            const filterOrigin = safeLower(filterOriginInput?.value);
-
-            clientesFiltrados = clientes.filter(cliente => {
-                const dataCliente = cliente?.createdAt ? cliente.createdAt.split('T')[0] : '';
-                const origemCliente = safeLower(cliente?.origem);
-
-                const filtraData = filterDate ? dataCliente === filterDate : true;
-                const filtraOrigem = filterOrigin ? origemCliente.includes(filterOrigin) : true;
-
-                return filtraData && filtraOrigem;
-            });
-
-            const visualizadosCount = clientesFiltrados.filter(c =>
-                safeLower(c?.status) === 'visualizado'
-            ).length;
-
-            const pendentesCount = clientesFiltrados.filter(c =>
-                safeLower(c?.status) === 'pendente'
-            ).length;
-
-            criarOuAtualizarContadores(visualizadosCount, pendentesCount, clientesFiltrados.length);
-
-            currentPage = 1;
-            displayClientes();
-        });
-    }
-
-    // Função para abrir WhatsApp e atualizar status
     const abrirWhatsApp = async (link, id) => {
         try {
             window.open(link, '_blank');
-
-            const response = await fetch(`https://www.sansolenergiasolar.com.br/api/clientes/${id}/visualizado`, {
+            const response = await fetch(`${API_BASE_URL}/clientes/${id}/visualizado`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
             });
-
-            if (response.ok) {
-                alert('Status do cliente atualizado para "visualizado".');
-                await fetchClientesComFiltro();
-            } else {
-                alert('Falha ao atualizar o status do cliente.');
-            }
+            if (response.ok) fetchClientes(currentPage);
         } catch (error) {
-            console.error('Erro ao abrir o WhatsApp ou atualizar status:', error);
+            console.error('Erro ao abrir WhatsApp ou atualizar status:', error);
         }
     };
 
-    // Baixar Excel
-    if (excel) {
-        excel.addEventListener('click', async () => {
-            try {
-                const response = await fetch('https://www.sansolenergiasolar.com.br/api/clientes/excel', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+    const deleteCliente = async (id) => {
+        if (!confirm('Tem certeza que deseja deletar este cliente?')) return;
 
-                if (!response.ok) throw new Error(`Erro ao buscar o arquivo: ${response.status}`);
+        try {
+            const response = await fetch(`${API_BASE_URL}/clientes/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
 
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'dados.xlsx';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                window.URL.revokeObjectURL(url);
-            } catch (error) {
-                alert('Erro ao baixar o arquivo.');
-                console.error(error);
+            if (response.status === 204) {
+                alert('Cliente deletado com sucesso!');
+                fetchClientes(currentPage); // atualiza a tabela
+            } else {
+                const data = await response.json();
+                alert(data.detail || 'Erro ao deletar cliente.');
             }
-        });
-    }
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao deletar cliente.');
+        }
+    };
 
-    // Esconde botões e filtros para vendedor
-    if (role === 'vendedor') {
-        if (returnBtn) returnBtn.style.display = 'none';
-        if (acoes) acoes.style.display = 'none';
-        if (filterDateInput) filterDateInput.style.display = 'none';
-        if (filterOriginInput) filterOriginInput.style.display = 'none';
-        if (applyFiltersBtn) applyFiltersBtn.style.display = 'none';
-    }
+    const downloadExcel = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/clientes/excel`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!response.ok) throw new Error('Erro ao buscar o arquivo');
 
-    // Expondo funções globalmente
-    window.deleteCliente = deleteCliente;
-    window.abrirWhatsApp = abrirWhatsApp;
-    window.fetchClientes = fetchClientesComFiltro;
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'dados_clientes.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao baixar o arquivo.');
+        }
+    };
 
-    // Carrega dados inicialmente
-    fetchClientesComFiltro();
+    const setupUIForRole = () => {
+        if (role === 'admin') {
+            document.getElementById('excel')?.classList.remove('hidden');
+        }
+
+        if (role === 'vendedor') {
+            document.getElementById('return-btn')?.remove();
+            document.getElementById('acoes')?.remove();
+            document.querySelector('.filters')?.remove();
+        }
+    };
+
+    // Event Listeners
+    tableBody.addEventListener('click', (event) => {
+        const target = event.target.closest('button');
+        const row = target?.closest('tr');
+        if (!row || !target) return;
+
+        const clientId = row.dataset.clientId;
+
+        if (target.classList.contains('btn-zap')) abrirWhatsApp(row.dataset.whatsappLink, clientId);
+        if (target.classList.contains('btn-delete')) deleteCliente(clientId);
+    });
+
+    prevBtn?.addEventListener('click', () => { if (pagination.has_prev) fetchClientes(currentPage - 1); });
+    nextBtn?.addEventListener('click', () => { if (pagination.has_next) fetchClientes(currentPage + 1); });
+    applyFiltersBtn?.addEventListener('click', applyFilters);
+    excel?.addEventListener('click', downloadExcel);
+    returnBtn?.addEventListener('click', () => window.location.href = 'admin.html');
+    registerClientBtn?.addEventListener('click', () => window.location.href = `vendedor.html?vendedor=${encodeURIComponent(nomeUsuario)}`);
+    logoutBtn?.addEventListener('click', logout);
+
+    // Inicialização
+    setupUIForRole();
+    fetchClientes(currentPage);
 });
-
-function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    localStorage.removeItem('name');
-    localStorage.removeItem('phone');
-    localStorage.removeItem('usuarioLogado');
-    alert("Você foi deslogado.");
-    window.location.href = 'login.html';
-}

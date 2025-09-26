@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preenchimento Dinâmico</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="css/vendedor.css">
+</head>
+
+<body>
+    <section id="simulations">
+        <h2 class="section-title">Simule a Economia do seu Cliente</h2>
+        <h3 class="section-subtitle">Insira os dados do cliente e veja o resultado</h3>
+
+        <div id="simulation-form">
+            <input type="text" id="name" placeholder="Nome do cliente" required />
+            <input type="tel" id="phone" placeholder="Telefone do cliente" required />
+            <input type="text" id="bill" placeholder="Valor da Conta de Energia" required />
+            <button id="simulate-btn">Calcular</button>
+        </div>
+
+        <div id="simulation-result" class="hidden">
+            <h3>Resultados da Simulação</h3>
+            <br>
+            <p>
+                💡 Conta <strong>SEM</strong> Energia Solar:
+                <span id="contaSemSolar">R$0,00</span>
+            </p>
+            <p>💸 Desconto Mensal: <span id="economiaMensal">R$0,00</span></p>
+            <p>
+                💡 Conta <strong>COM</strong> Energia Solar:
+                <span id="contaComSolar">R$0,00</span>
+            </p>
+            <p>
+                🏦 Investimento Kit Solar:
+                <span id="parcelaBanco84">R$0,00</span>
+            </p>
+            <p>
+                📅 Kit Solar: <span id="numeroMod">0</span> Placas
+                <span id="description"></span>
+            </p>
+            <p>
+                💰 Nos próximos anos irei <strong>perder para EQUATORIAL</strong> sem energia solar:
+                <span id="valor25AnosSem">R$0,00</span>
+            </p>
+            <p>
+                💰 Minha <strong>economia com energia solar</strong> nos próximos anos:
+                <span id="valor25AnosCom">R$0,00</span>
+            </p>
+
+            <br /><br />
+            <h3>Quer Economizar?</h3>
+            <br />
+
+            <!-- <a href="#" id="whatsApp-link2" target="_blank">
+                <button id="whatsApp-btn" class="fa-brands fa-whatsapp">
+                    <p>Falar no WhatsApp</p>
+                </button>
+            </a> -->
+
+            <!-- <a href="conta-energiaVendor.html">
+                <br /><button class="btn-bill pulse">
+                    VEJA A CONTA COM ENERGIA SOLAR
+                </button>
+            </a> -->
+        </div>
+
+        <a href="approve.html">
+            <button class="btn-bill pulse">
+                VOLTAR PARA APROVAÇÃO
+            </button>
+        </a>
+    </section>
+    <script src="js/vendedor.js"></script>
+</body>
+
+</html>

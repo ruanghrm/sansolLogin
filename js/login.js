@@ -1,21 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const form = document.querySelector('form');
+  // --- Elementos do DOM ---
+  const loginForm = document.querySelector('form');
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
+  const submitButton = loginForm.querySelector('button[type="submit"]');
 
-  // Não remover ou ler 'usuarioLogado' aqui no carregamento para evitar logs errados
+  // --- Constantes ---
+  const API_URL = 'https://backend.sansolenergiasolar.com.br/api/v1/auth/login';
 
-  form.addEventListener('submit', async (event) => {
+  /**
+   * Gerencia o estado de carregamento do formulário, desabilitando o botão
+   * e alterando seu texto para fornecer feedback visual ao usuário.
+   * @param {boolean} isLoading - `true` se a requisição está em andamento, `false` caso contrário.
+   */
+  const setFormLoading = (isLoading) => {
+    submitButton.disabled = isLoading;
+    submitButton.textContent = isLoading ? 'Entrando...' : 'Entrar';
+  };
+
+  loginForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    const email = document.getElementById('email').value.trim();
-    const senha = document.getElementById('password').value.trim();
+    const email = emailInput.value.trim();
+    const senha = passwordInput.value.trim();
 
     if (!email || !senha) {
       alert('Por favor, preencha todos os campos.');
       return;
     }
 
+    setFormLoading(true);
+
     try {
-      const response = await fetch('https://www.sansolenergiasolar.com.br/api/login', {
+      const response = await fetch(API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -24,36 +41,43 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       const data = await response.json();
+      console.log('📥 Resposta completa da API de login:', data);
 
       if (response.ok) {
-        alert('✅ Login realizado com sucesso!');
-
-        // Armazenar dados no localStorage
+        // Armazena o token e dados do usuário no localStorage
         localStorage.setItem('token', data.token);
-        localStorage.setItem('role', data.role);
+        localStorage.setItem('user', JSON.stringify({
+          nome: data.nome,
+          email: data.email,
+          role: data.role
+        }));
 
-        const nomeUsuario = data.nome || email;
-        localStorage.setItem('nome', nomeUsuario);
+        console.log(`✅ Login bem-sucedido: ${data.nome} (${data.role})`);
 
-        // Armazena objeto usuarioLogado para facilitar leitura depois
-        localStorage.setItem('usuarioLogado', JSON.stringify({ nome: nomeUsuario }));
-
-        console.log('Usuário logado:', nomeUsuario); // Log só após login bem-sucedido
-
-        // Redireciona conforme perfil
+        // Redireciona o usuário de acordo com a role
         if (data.role === 'admin') {
           window.location.href = 'admin.html';
         } else if (data.role === 'vendedor') {
           window.location.href = 'approve.html';
-        } else {
-          alert('⚠️ Perfil de usuário desconhecido.');
+        } else if (data.role === 'prospect') {
+          window.location.href = 'approve.html' 
+        } else if (data.role === 'sdr') {
+          window.location.href = 'approve.html' 
+        } else if (data.role === 'bdr') {
+          window.location.href = 'approve.html' 
+        }
+         else {
+          alert(`⚠️ Perfil "${data.role}" não possui página configurada.`);
+          setFormLoading(false);
         }
       } else {
         alert(`❌ Erro ao fazer login: ${data.error || 'Credenciais inválidas.'}`);
+        setFormLoading(false);
       }
     } catch (error) {
       console.error('❗ Erro na requisição:', error);
       alert('🌐 Erro de rede. Tente novamente mais tarde.');
+      setFormLoading(false);
     }
   });
 });

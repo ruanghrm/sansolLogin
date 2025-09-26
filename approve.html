@@ -11,9 +11,9 @@
 </head>
 
 <body>
-    <button id="excel" title="Baixar Excel">
+    <button id="excel" title="Baixar Excel" class="hidden">
         <i class="fas fa-file-excel"></i>
-    </button>    
+    </button>
 
     <div class="container">
         <header>
@@ -21,12 +21,13 @@
                 <img src="assets/images/sansolLogo.png" alt="Logo da Empresa" class="logo">
             </a>
             <div class="header-buttons">
-                <button id="return-btn" onclick="location.href='admin.html'" class="btn return">Retornar</button>
-                <button onclick="logout()" class="btn logout">Fazer Logout</button>
+                <button id="return-btn" class="btn return">Retornar</button>
+                <button id="register-client-btn" class="btn">Cadastrar Cliente</button>
+                <button id="logout-btn" class="btn logout">Fazer Logout</button>
             </div>
         </header>
         <main>
-            <div class="filters">
+            <!-- <div class="filters">
                 <label for="filter-date">Filtrar por data:</label>
                 <input type="date" id="filter-date">
 
@@ -34,7 +35,7 @@
                 <input type="text" id="filter-origin" placeholder="Digite a origem">
 
                 <button id="apply-filters" class="btn">Aplicar Filtros</button>
-            </div>
+            </div> -->
 
             <h2>Dados para Validação</h2>
             <table>

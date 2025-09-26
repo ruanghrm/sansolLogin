@@ -259,132 +259,45 @@ tr:hover {
     color: darkred;
 }
 
+.hidden {
+    display: none !important;
+}
+
+/* Quando for celular (até 768px) */
 @media (max-width: 768px) {
-    body {
-        padding: 10px;
+    /* Esconde tudo dentro da .container, menos o header */
+    .container > *:not(header) {
+        display: none !important;
     }
 
-    .container {
-        padding: 20px;
-        border-radius: 15px;
+    /* Dentro do header, esconde todos os botões */
+    .header-buttons .btn {
+        display: none;
     }
 
+    /* Mostra apenas Cadastrar Cliente e Logout */
+    #register-client-btn,
+    #logout-btn {
+        display: inline-block;
+    }
+
+    /* Opcional: centraliza os botões em coluna abaixo da logo */
     header {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
         gap: 15px;
-    }
-
-    .logo {
-        width: 180px;
     }
 
     .header-buttons {
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: column;
         gap: 10px;
     }
 
     .header-buttons .btn {
-        padding: 8px 16px;
-        font-size: 13px;
-    }
-
-    h2 {
-        font-size: 22px;
-        margin-bottom: 10px;
-    }
-
-    table {
-        font-size: 13px;
-    }
-
-    th, td {
-        padding: 10px;
-    }
-
-    .btn-zap {
-        padding: 5px 10px;
-        font-size: 13px;
-    }
-
-    #pagination {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .btn-pagination {
-        width: 100%;
-        padding: 8px;
-        font-size: 13px;
-    }
-
-    .filters {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-        padding: 15px;
-    }
-
-    .filters label {
-        font-size: 13px;
-    }
-
-    .filters input {
-        width: 100%;
-        padding: 8px;
-        font-size: 13px;
-    }
-
-    #apply-filters {
-        width: 100%;
-        padding: 10px;
-        font-size: 13px;
-    }
-}
-
-@media (max-width: 480px) {
-    .logo {
-        width: 150px;
-    }
-
-    h2 {
-        font-size: 20px;
-    }
-
-    table {
-        font-size: 12px;
-    }
-
-    th, td {
-        padding: 8px;
-    }
-
-    .btn-zap {
-        padding: 4px 8px;
-        font-size: 12px;
-    }
-
-    .btn-pagination {
-        padding: 6px;
-        font-size: 12px;
-    }
-
-    .filters {
-        padding: 10px;
-    }
-
-    .filters label {
-        font-size: 12px;
-    }
-
-    .filters input {
-        padding: 6px;
-        font-size: 12px;
-    }
-
-    #apply-filters {
-        padding: 8px;
-        font-size: 12px;
+        width: 200px;
+        text-align: center;
+        font-size: 16px;
+        padding: 12px;
     }
 }

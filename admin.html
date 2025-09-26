@@ -3,64 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sansol - Administração</title>
+    <title>Sansol - Painel Administrativo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/admin.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Painel de Administração</h1>
-            <nav>
-                <button id="createUserButton">Criar Usuário</button>
-                <button id="approveButton">Ir para Aprovação</button>
-                <button id="logoutButton">Sair</button>
+    <div class="admin-dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+               <h2><i class="fas fa-circle-half-stroke"></i> Sansol</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="sidebar-actions">
+                    <button id="createUserButton" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Criar Usuário
+                    </button>
+                    <button id="approveButton" class="btn btn-secondary">
+                        <i class="fas fa-check-circle"></i> Aprovações
+                    </button>
+                    <button id="logoutButton" class="btn btn-danger">
+                        <i class="fas fa-sign-out-alt"></i> Sair
+                    </button>
+                </div>
             </nav>
-        </header>
+        </aside>
 
-        <main>
-            <section id="userList">
-                <h2>Lista de Usuários</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="userTableBody"></tbody>
-                </table>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="content-header">
+                <div class="header-title">
+                    <h1>Painel de Administração</h1>
+                    <p>Gerencie usuários e permissões do sistema</p>
+                </div>
+            </header>
+
+            <!-- Stats Cards -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3></h3>
+                        <p>Administradores</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3></h3>
+                        <p>Vendedores</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3></h3>
+                        <p>Prospects</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3></h3>
+                        <p>SDR e BDR</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User List Section -->
+            <section class="content-section">
+                <div class="section-header">
+                    <h2>Lista de Usuários</h2>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Buscar usuário...">
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Perfil</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTableBody">
+                            <!-- Users will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="table-footer">
+                    <div class="rows-info"></div>
+                    <div id="pagination" class="pagination"></div>
+                </div>
             </section>
         </main>
     </div>
 
-    <!-- Popup de Edição com campo de senha -->
-    <div id="editPopup" class="popup hidden">
-        <div class="popup-content">
-            <span id="closePopup" class="close">&times;</span>
-            <h2>Editar Usuário</h2>
-            <form id="editUserForm">
-                <div class="input-group">
-                    <label for="editName">Nome</label>
-                    <input type="text" id="editName" name="name" required>
+    <!-- Edit User Modal -->
+    <div id="editPopup" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Usuário</h2>
+                <span id="closePopup" class="modal-close">&times;</span>
+            </div>
+            <form id="editUserForm" class="modal-form">
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="editName">Nome</label>
+                        <input type="text" id="editName" name="name" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="editEmail">E-mail</label>
+                        <input type="email" id="editEmail" name="email" required>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label for="editEmail">E-mail</label>
-                    <input type="email" id="editEmail" name="email" required>
-                </div>
+                
                 <div class="input-group">
                     <label for="editPassword">Senha (Deixe em branco para não alterar)</label>
-                    <input type="password" id="editPassword" name="password">
+                    <div class="password-input">
+                        <input type="password" id="editPassword" name="password">
+                        <button type="button" class="toggle-password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label for="editRole">Perfil</label>
-                    <select id="editRole" name="role" required>
-                        <option value="Administrador">Administrador</option>
-                        <option value="Vendedor">Vendedor</option>
-                    </select>
+                
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="editRole">Perfil</label>
+                        <select id="editRole" name="role" required>
+                            <option value="admin">Administrador</option>
+                            <option value="vendedor">Vendedor</option>
+                            <option value="prospect">Prospect</option>
+                            <option value="sdr">SDR</option>
+                            <option value="bdr">BDR</option>
+                        </select>
+                    </div>
                 </div>
-                <button type="submit" class="btn">Salvar Alterações</button>
+                
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                </div>
             </form>
         </div>
     </div>

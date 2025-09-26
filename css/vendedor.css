@@ -1,0 +1,262 @@
+/* css/vendedor.css */
+
+/* Reset e configurações básicas */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    min-height: 100vh;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+/* Container principal */
+#simulations {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    padding: 40px 30px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+#simulations::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+}
+
+/* Títulos */
+.section-title {
+    text-align: center;
+    color: #1e3a8a;
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.section-subtitle {
+    text-align: center;
+    color: #64748b;
+    font-size: 1.1rem;
+    margin-bottom: 40px;
+    font-weight: 400;
+}
+
+/* Formulário */
+#simulation-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+#simulation-form input {
+    padding: 15px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+}
+
+#simulation-form input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    transform: translateY(-2px);
+}
+
+#simulation-form input::placeholder {
+    color: #94a3b8;
+}
+
+/* Botões */
+#simulate-btn {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#simulate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(30, 58, 138, 0.3);
+}
+
+#simulate-btn:active {
+    transform: translateY(0);
+}
+
+.btn-bill {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.btn-bill:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(30, 58, 138, 0.3);
+}
+
+.btn-bill:active {
+    transform: translateY(0);
+}
+
+/* Resultados da simulação */
+#simulation-result {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    border-radius: 15px;
+    padding: 30px;
+    margin: 30px 0;
+    border-left: 4px solid #1e3a8a;
+}
+
+#simulation-result h3 {
+    color: #1e3a8a;
+    margin-bottom: 10px;
+    font-size: 1.4rem;
+}
+
+#simulation-result p {
+    margin: 15px 0;
+    padding: 12px 0;
+    border-bottom: 1px solid #e2e8f0;
+    color: #475569;
+    font-size: 1rem;
+}
+
+#simulation-result strong {
+    color: #1e3a8a;
+}
+
+#simulation-result span {
+    float: right;
+    font-weight: 600;
+    color: #3b82f6;
+}
+
+/* Classe hidden */
+.hidden {
+    display: none;
+}
+
+/* Botão WhatsApp (comentado no HTML) */
+#whatsApp-btn {
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px 25px;
+}
+
+#whatsApp-btn:hover {
+    box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    #simulations {
+        padding: 30px 20px;
+        border-radius: 15px;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+    }
+    
+    .section-subtitle {
+        font-size: 1rem;
+    }
+    
+    #simulation-result {
+        padding: 20px;
+    }
+    
+    #simulation-result p {
+        font-size: 0.9rem;
+    }
+    
+    #simulation-result span {
+        float: none;
+        display: block;
+        margin-top: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    #simulation-form input {
+        padding: 12px 15px;
+    }
+    
+    #simulate-btn, .btn-bill {
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
+}
+
+/* Efeitos de foco para acessibilidade */
+button:focus, input:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Loading state para o botão */
+#simulate-btn.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+#simulate-btn.loading::after {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
