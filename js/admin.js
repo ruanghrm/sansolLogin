@@ -9,9 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const createUserButton = document.getElementById('createUserButton');
     const approveButton = document.getElementById('approveButton');
     const logoutButton = document.getElementById('logoutButton');
-    const paginationContainer = document.getElementById('pagination'); // 🔑 precisa ter esse elemento no HTML
+    const tableBody = document.getElementById('userTableBody');
+
     let editingUserId = null;
-    let currentPage = 1; // página inicial
+    let allUsers = []; // Armazena todos os usuários
 
     if (!token || role !== 'admin') {
         alert('Você não tem permissão para acessar esta página.');
@@ -46,13 +47,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const updatedUser = {
             nome: document.getElementById('editName').value.trim(),
             email: document.getElementById('editEmail').value.trim(),
-            role: document.getElementById('editRole').value, // já deve vir como admin, vendedor, sdr, prospect etc.
+            role: document.getElementById('editRole').value,
         };
 
         const password = document.getElementById('editPassword').value.trim();
         if (password) updatedUser.senha = password;
-
-        console.log("📝 Dados a serem enviados para atualização:", updatedUser);
 
         try {
             const response = await fetch(`https://backend.sansolenergiasolar.com.br/api/v1/auth/usuarios/${editingUserId}`, {
@@ -65,13 +64,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const responseData = await response.json();
-            console.log("📩 Resposta da API:", responseData);
 
             if (response.ok) {
-                // O backend retorna { mensagens: [], usuario: { ... } }
                 alert('✅ Usuário atualizado com sucesso!');
                 editPopup.classList.add('hidden');
-                loadUsers(currentPage); // Recarrega a tabela mantendo a paginação atual
+                // Atualiza usuário no array local
+                const index = allUsers.findIndex(u => u.id === editingUserId);
+                if (index !== -1) allUsers[index] = { ...allUsers[index], ...updatedUser };
+                renderUsers();
             } else {
                 const errorMessage = (responseData.mensagens && responseData.mensagens.length > 0)
                     ? responseData.mensagens.join(', ')
@@ -84,9 +84,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    const loadUsers = async (page = 1) => {
+    const loadUsers = async () => {
         try {
-            const response = await fetch(`https://backend.sansolenergiasolar.com.br/api/v1/auth/usuarios?page=${page}`, {
+            const response = await fetch(`https://backend.sansolenergiasolar.com.br/api/v1/auth/usuarios?limit=1000`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -97,124 +97,84 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error(`Falha ao carregar usuários: ${response.status}`);
 
             const data = await response.json();
-            const users = data.usuarios || [];
-            const pagination = data.pagination || {};
-            const tableBody = document.getElementById('userTableBody');
-            tableBody.innerHTML = '';
-
-            if (users.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="5">Nenhum usuário encontrado.</td></tr>`;
-                paginationContainer.innerHTML = '';
-                return;
-            }
-
-            // 🔹 Contagem por perfil
-            const stats = {
-                admin: 0,
-                vendedor: 0,
-                prospect: 0,
-                sdr_bdr: 0
-            };
-
-            users.forEach(user => {
-                // Atualiza contagem por perfil
-                switch(user.role) {
-                    case 'admin': stats.admin++; break;
-                    case 'vendedor': stats.vendedor++; break;
-                    case 'prospect': stats.prospect++; break;
-                    case 'sdr':
-                    case 'bdr':
-                        stats.sdr_bdr++; 
-                        break;
-                }
-
-                // Popula tabela
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${user.nome}</td>
-                    <td>${user.email}</td>
-                    <td>${user.role}</td>
-                    <td>
-                        <button class="editButton" data-id="${user.id}">Editar</button>
-                        <button class="deleteButton" data-id="${user.id}">Excluir</button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-
-                row.querySelector('.editButton').addEventListener('click', () => openEditPopup(user));
-
-                row.querySelector('.deleteButton').addEventListener('click', async () => {
-                    if (confirm('Tem certeza que deseja excluir este usuário?')) {
-                        try {
-                            const deleteResponse = await fetch(`https://backend.sansolenergiasolar.com.br/api/v1/auth/usuarios/${user.id}`, {
-                                method: 'DELETE',
-                                headers: {
-                                    'Authorization': `Bearer ${token}`,
-                                    'Content-Type': 'application/json'
-                                }
-                            });
-                            if (deleteResponse.ok) {
-                                alert('Usuário excluído com sucesso!');
-                                loadUsers(currentPage);
-                            } else {
-                                const data = await deleteResponse.json();
-                                alert(`Erro ao excluir usuário: ${data.message}`);
-                            }
-                        } catch (error) {
-                            console.error('Erro ao excluir usuário:', error);
-                            alert('Erro ao excluir usuário.');
-                        }
-                    }
-                });
-            });
-
-            // 🔹 Atualiza os cards de estatísticas
-            document.querySelectorAll('.stats-cards .stat-card h3')[0].textContent = stats.admin;
-            document.querySelectorAll('.stats-cards .stat-card h3')[1].textContent = stats.vendedor;
-            document.querySelectorAll('.stats-cards .stat-card h3')[2].textContent = stats.prospect;
-            document.querySelectorAll('.stats-cards .stat-card h3')[3].textContent = stats.sdr_bdr;
-
-            // Renderiza paginação
-            renderPagination(pagination);
-
+            allUsers = data.items || [];
+            renderUsers();
         } catch (error) {
             console.error('Erro ao carregar usuários:', error);
             alert('Erro ao carregar a lista de usuários.');
         }
     };
 
-    const renderPagination = (pagination) => {
-        paginationContainer.innerHTML = '';
+    const renderUsers = () => {
+        tableBody.innerHTML = '';
 
-        const { page, total_pages, has_prev, has_next } = pagination;
-
-        if (total_pages <= 1) return; // não renderiza se só existe 1 página
-
-        if (has_prev) {
-            const prevBtn = document.createElement('button');
-            prevBtn.textContent = '← Anterior';
-            prevBtn.addEventListener('click', () => {
-                currentPage = page - 1;
-                loadUsers(currentPage);
-            });
-            paginationContainer.appendChild(prevBtn);
+        if (allUsers.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="5">Nenhum usuário encontrado.</td></tr>`;
+            return;
         }
 
-        const pageInfo = document.createElement('span');
-        pageInfo.textContent = `Página ${page} de ${total_pages}`;
-        pageInfo.style.margin = '0 10px';
-        paginationContainer.appendChild(pageInfo);
+        // Contagem por perfil
+        const stats = {
+            admin: 0,
+            vendedor: 0,
+            prospect: 0,
+            sdr_bdr: 0
+        };
 
-        if (has_next) {
-            const nextBtn = document.createElement('button');
-            nextBtn.textContent = 'Próxima →';
-            nextBtn.addEventListener('click', () => {
-                currentPage = page + 1;
-                loadUsers(currentPage);
+        allUsers.forEach(user => {
+            switch(user.role) {
+                case 'admin': stats.admin++; break;
+                case 'vendedor': stats.vendedor++; break;
+                case 'prospect': stats.prospect++; break;
+                case 'sdr':
+                case 'bdr': stats.sdr_bdr++; break;
+            }
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${user.nome}</td>
+                <td>${user.email}</td>
+                <td>${user.role}</td>
+                <td>
+                    <button class="editButton" data-id="${user.id}">Editar</button>
+                    <button class="deleteButton" data-id="${user.id}">Excluir</button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+
+            row.querySelector('.editButton').addEventListener('click', () => openEditPopup(user));
+            row.querySelector('.deleteButton').addEventListener('click', async () => {
+                if (confirm('Tem certeza que deseja excluir este usuário?')) {
+                    try {
+                        const deleteResponse = await fetch(`https://backend.sansolenergiasolar.com.br/api/v1/auth/usuarios/${user.id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        if (deleteResponse.ok) {
+                            alert('Usuário excluído com sucesso!');
+                            allUsers = allUsers.filter(u => u.id !== user.id);
+                            renderUsers();
+                        } else {
+                            const data = await deleteResponse.json();
+                            alert(`Erro ao excluir usuário: ${data.message}`);
+                        }
+                    } catch (error) {
+                        console.error('Erro ao excluir usuário:', error);
+                        alert('Erro ao excluir usuário.');
+                    }
+                }
             });
-            paginationContainer.appendChild(nextBtn);
-        }
+        });
+
+        // Atualiza os cards de estatísticas
+        document.querySelectorAll('.stats-cards .stat-card h3')[0].textContent = stats.admin;
+        document.querySelectorAll('.stats-cards .stat-card h3')[1].textContent = stats.vendedor;
+        document.querySelectorAll('.stats-cards .stat-card h3')[2].textContent = stats.prospect;
+        document.querySelectorAll('.stats-cards .stat-card h3')[3].textContent = stats.sdr_bdr;
     };
 
-    loadUsers(currentPage);
+    loadUsers();
 });
