@@ -1,0 +1,408 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 20px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    max-width: 450px;
+    width: 100%;
+    margin-top: 20px;
+    box-sizing: border-box;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.logo {
+    width: 80px;
+    height: 50px;
+    margin-right: 10px;
+}
+
+.header-text-container {
+    text-align: center;
+    flex: 1;
+}
+
+.company-name {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.company-details {
+    font-size: 12px;
+}
+
+.blank-square {
+    width: 100%;
+    border: 0.5px solid black;
+    height: 60px;
+    background-color: #fff;
+    margin: 10px 0;
+}
+
+.blank-cell-text2 {
+    font-size: 5px;
+    margin-left: 5px;
+    margin-bottom: 5px;
+    color: #000;
+}
+
+.row {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: flex-start;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.section {
+    width: 60%; 
+    padding: 10px;
+    margin: 5px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    text-align: left;
+}
+
+.section text {
+    margin-left: 0;
+}
+
+.bold-text {
+    font-weight: bold;
+}
+
+
+.info-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    width: 100%;
+    padding: 10px;
+}
+
+.box-unidade, .box-blue {
+    background-color: #FF6347;
+    border-radius: 10px 10px 0 0;
+    margin-bottom: 10px;
+    width: 150px;
+    height: 55px;
+    text-align: center;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 5px; 
+}
+
+.box-blue {
+    background-color: #4682B4;
+}
+
+
+.box-yellow {
+    margin-top: -20px;
+    height: 50px;
+    background-color: #FFD700;
+    border: 1px solid #000;
+    text-align: center;
+}
+
+.box-red {
+    background-color: #FF6347;
+    border: 1px solid #000;
+    text-align: center;
+    margin-top: -20px;
+    height: 50px;
+}
+
+.box-title2 {
+    font-size: 13px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 5px;
+}
+
+.box-title {
+    font-size: 13px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 5px;
+}
+
+.box-value {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    background-color: white;
+    padding: 5px;
+    width: 105px;
+    text-align: center;
+}
+
+.qr-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    border: 0.5px solid black;
+    height: 200px;
+    box-shadow: inset 0px 0px 8px 1px rgba(255, 0, 0, 0.3);
+    margin-top: -10px;
+    justify-content: center;
+    width: 100%;
+}
+
+.qr-code-image {
+    width: 100px;
+    height: 100px;
+    margin-right: 50px;
+}
+
+.table-row {
+    display: flex;
+    flex-direction: line;
+    border-bottom: 1px solid #ddd;
+    padding: 5px 0;
+    width: 100%;
+}
+
+.table-header-cell {
+    font-weight: bold;
+    background-color: #4682B4;
+    color: white;
+    padding: 5px;
+    width: 40%;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.blank-cells-container {
+    display: flex;
+    flex-direction: line;
+    justify-content: center;
+    align-items: center;
+}
+
+.blank-cell {
+    width: 71px;
+    height: 47px;
+    background-color: white;
+    border: 1px solid #ddd;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.blank-cell-text {
+    font-size: 8px;
+    text-align: center;
+    margin-top: 5px;
+}
+
+.date-text {
+    font-size: 12px;
+    text-align: center;
+    color: #000;
+    margin-top: 5px;
+}
+
+.quadrado {
+    width: 100%; 
+    height: 100px;
+    background-color: white;
+    border: 1px solid black;
+}
+
+.btn-return {
+    display: flex;
+    position: fixed;  
+    bottom: 0;      
+    left: 0;     
+    width: 100%;      
+    justify-content: center; 
+    padding: 15px 0;  
+    background-color: #4682B4;  
+    color: white;  
+    text-align: center; 
+    font-weight: bold; 
+    cursor: pointer;
+}
+
+.btn-return:hover {
+    background-color: #003159;  
+
+}
+
+.whatsapp-container {
+    position: fixed;
+    right: 20px;
+    bottom: 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    z-index: 1000;
+    text-decoration: none;
+}
+
+.whatsapp-text {
+    font-size: 14px;
+    color: #333;
+    text-align: center;
+    font-weight: bold;
+    background-color: white; 
+    padding: 4px 8px;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+#whatsApp-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #25D366;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    text-decoration: none;
+}
+
+#whatsApp-btn:hover {
+    transform: scale(1.1);
+}
+
+#whatsApp-btn i {
+    font-size: 30px;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:focus, a:visited, a:active {
+    outline: none;
+    text-decoration: none;
+}
+
+
+@media screen and (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        max-width: 100%;
+        margin-top: 10px;
+    }
+
+    .header {
+        margin-bottom: 8px;
+    }
+
+    .logo {
+        width: 70px;
+        height: 45px;
+    }
+
+    .company-name {
+        font-size: 14px;
+    }
+
+    .company-details {
+        font-size: 10px;
+    }
+
+    .blank-square {
+        height: 50px;
+    }
+
+    .blank-cell-text2 {
+        font-size: 4px;
+    }
+
+    .row {
+        margin-bottom: 8px;
+    }
+
+    .section {
+        width: 55%; 
+        padding: 8px;
+    }
+
+    .box-unidade, .box-blue {
+        width: 130px;
+        height: 50px;
+    }
+
+    .box-title2, .box-title {
+        font-size: 12px;
+    }
+
+    .box-value {
+        font-size: 14px;
+        width: 90px;
+    }
+
+    .qr-container {
+        height: 180px;
+    }
+
+    .qr-code-image {
+        width: 90px;
+        height: 90px;
+        margin-right: 30px;
+    }
+
+    .table-header-cell {
+        font-size: 12px;
+        width: 35%;
+    }
+
+    .blank-cell {
+        width: 65px;
+        height: 45px;
+    }
+
+    .blank-cell-text {
+        font-size: 7px;
+    }
+
+    .date-text {
+        font-size: 10px;
+    }
+
+    .btn-return {
+        padding: 12px 0;
+    }
+
+    .whatsapp-text {
+        display: none;
+    }
+}

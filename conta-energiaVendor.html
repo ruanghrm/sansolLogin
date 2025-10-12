@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill Screen</title>
+    <link rel="stylesheet" href="css/bill.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/scrollreveal"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <img src="assets/images/sansolLogo.jpeg" alt="Logo Sansol Energia" class="logo">
+            <div class="header-text-container">
+                <p class="company-name">Sansol Energia S.A.</p>
+                <p class="company-details">CNPJ: 00.000.000/0000-00 | Inscrição Estadual: 000.000.00-0</p>
+                <p class="company-details">Endereço: Rua Exemplo, 123 - Cidade, Estado - CEP: 00000-000</p>
+            </div>
+        </header>
+
+        <div class="whatsapp-container">
+            <p class="whatsapp-text">ENTRE EM CONTATO NO WHATSAPP</p>
+            <a href="#" id ="whatsApp-link"target="_blank">
+                <button id="whatsApp-btn">
+                    <i class="fab fa-whatsapp"></i>
+                </button>
+            </a>
+        </div>
+
+        <div class="blank-square">
+            <p class="blank-cell-text2">Grupo e Subgrupo de Tensão: **</p>
+            <p class="blank-cell-text2">Tensão: **</p>
+            <p class="blank-cell-text2">Nº Medidor: ******</p>
+            <p class="blank-cell-text2">Tipo de Tarifa: ***********</p>
+            <p class="blank-cell-text2">Classificação: ***********</p>
+        </div>
+
+        <div class="row">
+            <div class="section">
+                <p class="bold-text" id="name"></p>
+                <p>INSTALAÇÃO: ****</p>
+                <p>CPF: ***.***.***-**</p>
+                <p>******************* ****** *****/**** ******</p>
+            </div>
+            <div class="right-column">
+                <div class="box-unidade">
+                    <p class="box-title">Unidade Consumidora</p>
+                    <p>**********</p>
+                </div>
+                <div class="box-blue">
+                    <p class="box-title">Parceira de Negócio</p>
+                    <p>**********</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-container">
+            <div class="box-yellow">
+                <p class="box-title2">Conta Mês</p>
+                <p class="box-value" id="bill-month">**/2025</p>
+            </div>
+            <div class="box-red">
+                <p class="box-title">Total a Pagar</p>
+                <p class="box-value" id="total-to-pay"></p>
+            </div>
+            <div class="box-yellow">
+                <p class="box-title2">Vencimento</p>
+                <p class="box-value" id="bill-due-date">**/**/2025</p>
+            </div>
+        </div>
+        
+        
+        <div class="qr-container">
+            <img src="assets/images/sansolIcon.jpeg" alt="QR Code" class="qr-code-image">
+            <div>
+                <p>Nota Fiscal - Fatura de Energia</p>
+                <p>Série B: 000</p>
+                <p>Número da Fatura: *******</p>
+                <p>CFOP: ****/**</p>
+                <p>Data de Emissão: **/**/****</p>
+            </div>
+        </div>
+
+        <div class="quadrado"></div>
+
+        <div class="table-row">
+            <p class="table-header-cell" style="background-color: #4682B4;">Data de Leituras</p>
+            <div class="blank-cells-container">
+                <div class="blank-cell">
+                    <p class="blank-cell-text">Leitura Anterior</p>
+                    <p class="date-text">**/**/****</p>
+                </div>
+                <div class="blank-cell">
+                    <p class="blank-cell-text">Leitura Atual</p>
+                    <p class="date-text">**/**/****</p>
+                </div>
+                <div class="blank-cell">
+                    <p class="blank-cell-text">Nº de Dias</p>
+                    <p class="date-text">**/**/****</p>
+                </div>
+                <div class="blank-cell">
+                    <p class="blank-cell-text">Próxima Leitura</p>
+                    <p class="date-text">**/**/****</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+    <button id="btn-voltar" class="btn-return">Voltar</button>
+    
+    <script src="js/bill.js"></script>
+</body>
+</html>

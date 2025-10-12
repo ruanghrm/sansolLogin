@@ -10,9 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const approveButton = document.getElementById('approveButton');
     const logoutButton = document.getElementById('logoutButton');
     const tableBody = document.getElementById('userTableBody');
+    const searchInput = document.querySelector('.search-box input');
 
     let editingUserId = null;
     let allUsers = []; // Armazena todos os usuários
+    let filteredUsers = []; // Para busca
 
     if (!token || role !== 'admin') {
         alert('Você não tem permissão para acessar esta página.');
@@ -71,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Atualiza usuário no array local
                 const index = allUsers.findIndex(u => u.id === editingUserId);
                 if (index !== -1) allUsers[index] = { ...allUsers[index], ...updatedUser };
-                renderUsers();
+                applySearch(); // Atualiza a tabela filtrada
             } else {
                 const errorMessage = (responseData.mensagens && responseData.mensagens.length > 0)
                     ? responseData.mensagens.join(', ')
@@ -98,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
             allUsers = data.items || [];
+            filteredUsers = [...allUsers];
             renderUsers();
         } catch (error) {
             console.error('Erro ao carregar usuários:', error);
@@ -108,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderUsers = () => {
         tableBody.innerHTML = '';
 
-        if (allUsers.length === 0) {
+        if (filteredUsers.length === 0) {
             tableBody.innerHTML = `<tr><td colspan="5">Nenhum usuário encontrado.</td></tr>`;
             return;
         }
@@ -121,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
             sdr_bdr: 0
         };
 
-        allUsers.forEach(user => {
+        filteredUsers.forEach(user => {
             switch(user.role) {
                 case 'admin': stats.admin++; break;
                 case 'vendedor': stats.vendedor++; break;
@@ -156,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (deleteResponse.ok) {
                             alert('Usuário excluído com sucesso!');
                             allUsers = allUsers.filter(u => u.id !== user.id);
-                            renderUsers();
+                            applySearch(); // Atualiza a tabela filtrada
                         } else {
                             const data = await deleteResponse.json();
                             alert(`Erro ao excluir usuário: ${data.message}`);
@@ -175,6 +178,19 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.stats-cards .stat-card h3')[2].textContent = stats.prospect;
         document.querySelectorAll('.stats-cards .stat-card h3')[3].textContent = stats.sdr_bdr;
     };
+
+    // --- 🔍 Função de busca ---
+    const applySearch = () => {
+        const query = searchInput.value.toLowerCase();
+        filteredUsers = allUsers.filter(u =>
+            u.nome.toLowerCase().includes(query) ||
+            u.email.toLowerCase().includes(query) ||
+            u.role.toLowerCase().includes(query)
+        );
+        renderUsers();
+    };
+
+    searchInput.addEventListener('input', applySearch);
 
     loadUsers();
 });

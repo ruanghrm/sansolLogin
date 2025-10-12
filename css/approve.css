@@ -228,7 +228,7 @@ tr:hover {
     box-shadow: 0 0 8px rgba(255, 102, 0, 0.3);
 }
 
-#apply-filters {
+#apply-filters, #clear-filters {
     background: linear-gradient(90deg, #ff6600, #ff3300);
     color: white;
     border: none;
@@ -242,6 +242,12 @@ tr:hover {
 }
 
 #apply-filters:hover {
+    background: linear-gradient(90deg, #ff3300, #cc2900);
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(255, 51, 0, 0.4);
+}
+
+#clear-filters:hover {
     background: linear-gradient(90deg, #ff3300, #cc2900);
     transform: scale(1.05);
     box-shadow: 0 6px 16px rgba(255, 51, 0, 0.4);

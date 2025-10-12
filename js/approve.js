@@ -1,9 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
     const API_BASE_URL = 'https://backend.sansolenergiasolar.com.br/api/v1';
-    const RECORDS_PER_PAGE = 5; // agora 5 registros por página
+    const RECORDS_PER_PAGE = 5; // 5 registros por página
     let currentPage = 1;
     let clientes = [];
     let pagination = {};
+
+    let totalClientes = 0;
+    let totalVisualizados = 0;
+    let totalPendentes = 0;
 
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user')) || {};
@@ -27,15 +31,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterDateInput = document.getElementById('filter-date');
     const filterOriginInput = document.getElementById('filter-origin');
     const applyFiltersBtn = document.getElementById('apply-filters');
+    const clearFiltersBtn = document.getElementById('clear-filters');
     const registerClientBtn = document.getElementById('register-client-btn');
     const logoutBtn = document.getElementById('logout-btn');
 
     const safeLower = (v) => (v ?? '').toString().trim().toLowerCase();
 
-    const updateStatusCounters = (clientesList) => {
-        const visualizadosCount = clientesList.filter(c => safeLower(c?.status) === 'visualizado').length;
-        const pendentesCount = clientesList.filter(c => safeLower(c?.status) === 'pendente').length;
+    // Estado do filtro
+    let filteredClientes = null;
 
+    /** Busca todos os clientes apenas para contagem de status */
+    const fetchAllClientesStatus = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/clientes/todos`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+            if (!response.ok) throw new Error('Erro ao buscar todos os clientes');
+
+            const allClientes = await response.json();
+
+            totalClientes = allClientes.length;
+            totalVisualizados = allClientes.filter(c => safeLower(c.status) === 'visualizado').length;
+            totalPendentes = allClientes.filter(c => safeLower(c.status) === 'pendente').length;
+
+            atualizarContadoresGerais();
+        } catch (error) {
+            console.error('Erro ao buscar todos os clientes:', error);
+        }
+    };
+
+    /** Atualiza contadores gerais na tela */
+    const atualizarContadoresGerais = () => {
         let contadorWrapper = document.getElementById('contadorWrapper');
         if (!contadorWrapper) {
             contadorWrapper = document.createElement('div');
@@ -52,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
             visualizadosSpan.id = 'visualizadosCount';
             contadorWrapper.appendChild(visualizadosSpan);
         }
-        visualizadosSpan.textContent = `Visualizados: ${visualizadosCount}`;
+        visualizadosSpan.textContent = `Visualizados (geral): ${totalVisualizados}`;
 
         let pendentesSpan = document.getElementById('pendentesCount');
         if (!pendentesSpan) {
@@ -60,32 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
             pendentesSpan.id = 'pendentesCount';
             contadorWrapper.appendChild(pendentesSpan);
         }
-        pendentesSpan.textContent = `Pendentes: ${pendentesCount}`;
-    };
-
-    /** Busca clientes da API usando paginação do backend */
-    const fetchClientes = async (page = 1) => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/clientes?page=${page}&per_page=${RECORDS_PER_PAGE}`, {
-                headers: { 'Authorization': `Bearer ${token}` },
-            });
-
-            if (!response.ok) throw new Error('Erro ao buscar clientes');
-
-            const data = await response.json();
-
-            // ⚡ Ajuste conforme instrução do backend
-            clientes = data.data || []; // antes era data.clientes
-            pagination = data.pagination || {}; // ajustar se a paginação mudou de lugar
-            currentPage = pagination.page || page;
-
-            console.log('📦 Clientes recebidos do backend:', clientes);
-
-            displayClientes();
-        } catch (error) {
-            console.error('Erro:', error);
-            alert('Erro ao carregar os dados dos clientes.');
-        }
+        pendentesSpan.textContent = `Pendentes (geral): ${totalPendentes}`;
     };
 
     /** Renderiza clientes na tabela */
@@ -101,41 +102,128 @@ document.addEventListener('DOMContentLoaded', () => {
             tr.dataset.whatsappLink = cliente.whatsappLink;
 
             tr.innerHTML = `
-                <td>${cliente.nome ?? '-'}</td>
-                <td>${cliente.origem ?? '-'}</td>
-                <td>${cliente.numero ?? '-'}</td>
-                <td>${valorConta}</td>
-                <td>${dataCadastro}</td>
-                <td>${cliente.status ?? '-'}</td>
-                <td>
-                    ${cliente.latitude && cliente.longitude
-                        ? `<a href="https://www.google.com/maps?q=${cliente.latitude},${cliente.longitude}" target="_blank">
-                               <i class="fas fa-map-marker-alt" style="color: #1e90ff;"></i>
-                           </a>`
-                        : '<span style="color: #888;">Nulo</span>'}
-                </td>
-                <td><button class="btn-zap"><i class="fab fa-whatsapp"></i> WhatsApp</button></td>
-                <td><button class="btn-delete" style="${role === 'vendedor' ? 'display: none;' : ''}">
-                <td><button class="btn-delete ${role === 'vendedor' ? 'hidden-for-vendedor' : ''}">
-                        <i class="fas fa-trash-alt"></i>
-                    </button></td>
-            `;
+            <td>${cliente.nome ?? '-'}</td>
+            <td>${cliente.origem ?? '-'}</td>
+            <td>${cliente.numero ?? '-'}</td>
+            <td>${valorConta}</td>
+            <td>${dataCadastro}</td>
+            <td>${cliente.status ?? '-'}</td>
+            <td>
+                ${cliente.latitude && cliente.longitude
+                    ? `<a href="https://www.google.com/maps?q=${cliente.latitude},${cliente.longitude}" target="_blank">
+                        <i class="fas fa-map-marker-alt" style="color: #1e90ff;"></i>
+                    </a>`
+                    : '<span style="color: #888;">Nulo</span>'}
+            </td>
+            <td><button class="btn-zap"><i class="fab fa-whatsapp"></i> WhatsApp</button></td>
+            <td><button class="btn-delete ${role === 'vendedor' ? 'hidden-for-vendedor' : ''}">
+                    <i class="fas fa-trash-alt"></i>
+                </button></td>
+        `;
 
             if (safeLower(cliente.status) === 'visualizado') tr.classList.add('visualizado-row');
             tableBody.appendChild(tr);
         });
 
-        recordCount.textContent = `Total de registros nesta página: ${clientes.length} | Total geral: ${pagination.total || '-'}`;
-        pageNum.textContent = `Página ${currentPage} de ${pagination.total_pages || '-'}`;
+        recordCount.textContent = `Total de registros nesta página: ${clientes.length} | Total geral: ${totalClientes}`;
+        pageNum.textContent = `Página ${currentPage} de ${filteredClientes ? Math.ceil(filteredClientes.length / RECORDS_PER_PAGE) : (pagination.total_pages || '-')}`;
 
-        prevBtn.disabled = !pagination.has_prev;
-        nextBtn.disabled = !pagination.has_next;
+        // Habilita/desabilita botões
+        if (filteredClientes) {
+            prevBtn.disabled = currentPage <= 1;
+            nextBtn.disabled = currentPage >= Math.ceil(filteredClientes.length / RECORDS_PER_PAGE);
+        } else {
+            prevBtn.disabled = !pagination.has_prev;
+            nextBtn.disabled = !pagination.has_next;
+        }
 
-        updateStatusCounters(clientes);
+        atualizarContadoresGerais();
     };
 
-    const applyFilters = () => {
-        alert('Filtros ainda precisam ser implementados no backend para funcionar corretamente com paginação.');
+    /** Busca clientes da API usando paginação do backend */
+    const fetchClientes = async (page = 1) => {
+        currentPage = page;
+
+        if (filteredClientes) {
+            // Paginação manual do filtro
+            const start = (currentPage - 1) * RECORDS_PER_PAGE;
+            const end = start + RECORDS_PER_PAGE;
+            clientes = filteredClientes.slice(start, end);
+            displayClientes();
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/clientes?page=${page}&per_page=${RECORDS_PER_PAGE}`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+
+            if (!response.ok) throw new Error('Erro ao buscar clientes');
+
+            const data = await response.json();
+
+            clientes = data.data || [];
+            pagination = data.pagination || {};
+            currentPage = pagination.page || page;
+
+            console.log('📦 Clientes recebidos do backend:', clientes);
+
+            displayClientes();
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro ao carregar os dados dos clientes.');
+        }
+    };
+
+    /** Aplica filtros de data e origem */
+    const applyFilters = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/clientes/todos`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+            if (!response.ok) throw new Error('Erro ao buscar todos os clientes');
+
+            let allClientes = await response.json();
+
+            // Filtro por origem
+            const originFilter = safeLower(filterOriginInput.value);
+            if (originFilter) {
+                allClientes = allClientes.filter(c => safeLower(c.origem).includes(originFilter));
+            }
+
+            // Filtro por data
+            const dateFilter = filterDateInput.value;
+            if (dateFilter) {
+                allClientes = allClientes.filter(c => {
+                    if (!c.createdAt) return false;
+                    const clientDate = new Date(c.createdAt).toISOString().split('T')[0];
+                    return clientDate === dateFilter;
+                });
+            }
+
+            filteredClientes = allClientes; // Guarda clientes filtrados
+            currentPage = 1; // Reinicia a página ao aplicar filtro
+
+            totalClientes = filteredClientes.length;
+            totalVisualizados = filteredClientes.filter(c => safeLower(c.status) === 'visualizado').length;
+            totalPendentes = filteredClientes.filter(c => safeLower(c.status) === 'pendente').length;
+
+            fetchClientes(currentPage);
+
+        } catch (error) {
+            console.error('Erro ao aplicar filtros:', error);
+            alert('Erro ao aplicar filtros.');
+        }
+    };
+
+    /** Limpa filtros */
+    const clearFilters = () => {
+        filterDateInput.value = '';
+        filterOriginInput.value = '';
+        filteredClientes = null;
+        currentPage = 1;
+        fetchClientes(currentPage);
+        fetchAllClientesStatus();
     };
 
     const logout = () => {
@@ -152,7 +240,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
             });
-            if (response.ok) fetchClientes(currentPage);
+            if (response.ok) {
+                fetchClientes(currentPage);
+                fetchAllClientesStatus();
+            }
         } catch (error) {
             console.error('Erro ao abrir WhatsApp ou atualizar status:', error);
         }
@@ -169,7 +260,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.status === 204) {
                 alert('Cliente deletado com sucesso!');
-                fetchClientes(currentPage); // atualiza a tabela
+                fetchClientes(currentPage);
+                fetchAllClientesStatus();
             } else {
                 const data = await response.json();
                 alert(data.detail || 'Erro ao deletar cliente.');
@@ -226,9 +318,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (target.classList.contains('btn-delete')) deleteCliente(clientId);
     });
 
-    prevBtn?.addEventListener('click', () => { if (pagination.has_prev) fetchClientes(currentPage - 1); });
-    nextBtn?.addEventListener('click', () => { if (pagination.has_next) fetchClientes(currentPage + 1); });
+    prevBtn?.addEventListener('click', () => {
+        if (currentPage > 1) fetchClientes(currentPage - 1);
+    });
+    nextBtn?.addEventListener('click', () => {
+        if (filteredClientes) {
+            if (currentPage < Math.ceil(filteredClientes.length / RECORDS_PER_PAGE)) fetchClientes(currentPage + 1);
+        } else if (pagination.has_next) {
+            fetchClientes(currentPage + 1);
+        }
+    });
     applyFiltersBtn?.addEventListener('click', applyFilters);
+    clearFiltersBtn?.addEventListener('click', clearFilters);
     excel?.addEventListener('click', downloadExcel);
     returnBtn?.addEventListener('click', () => window.location.href = 'admin.html');
     registerClientBtn?.addEventListener('click', () => window.location.href = `vendedor.html?vendedor=${encodeURIComponent(nomeUsuario)}`);
@@ -236,5 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Inicialização
     setupUIForRole();
-    fetchClientes(currentPage);
+    fetchAllClientesStatus().then(() => {
+        clearFilters(); // garante que filtros estão limpos e totais atualizados
+    });
 });
