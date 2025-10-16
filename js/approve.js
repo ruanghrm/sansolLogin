@@ -295,11 +295,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const setupUIForRole = () => {
-        if (role === 'admin') {
-            document.getElementById('excel')?.classList.remove('hidden');
-        }
+        document.getElementById('excel')?.classList.remove('hidden');
 
-        if (role === 'vendedor') {
+        if (role !== 'admin') {
             document.getElementById('return-btn')?.remove();
             document.getElementById('acoes')?.remove();
             document.querySelector('.filters')?.remove();
