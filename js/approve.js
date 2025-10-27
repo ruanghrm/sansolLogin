@@ -19,6 +19,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    // Função genérica para verificar validade do token nas requisições
+    async function safeFetch(url, options = {}) {
+        const response = await fetch(url, options);
+        if (response.status === 401) {
+            alert('Sua sessão expirou. Faça login novamente.');
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+            throw new Error('Token expirado');
+        }
+        return response;
+    }
+
     // Elementos do DOM
     const returnBtn = document.getElementById('return-btn');
     const excel = document.getElementById('excel');
@@ -43,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /** Busca todos os clientes apenas para contagem de status */
     const fetchAllClientesStatus = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/clientes/todos`, {
+            const response = await safeFetch(`${API_BASE_URL}/clientes/todos`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
             if (!response.ok) throw new Error('Erro ao buscar todos os clientes');
@@ -145,7 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
         currentPage = page;
 
         if (filteredClientes) {
-            // Paginação manual do filtro
             const start = (currentPage - 1) * RECORDS_PER_PAGE;
             const end = start + RECORDS_PER_PAGE;
             clientes = filteredClientes.slice(start, end);
@@ -154,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/clientes?page=${page}&per_page=${RECORDS_PER_PAGE}`, {
+            const response = await safeFetch(`${API_BASE_URL}/clientes?page=${page}&per_page=${RECORDS_PER_PAGE}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 
@@ -166,8 +178,6 @@ document.addEventListener('DOMContentLoaded', () => {
             pagination = data.pagination || {};
             currentPage = pagination.page || page;
 
-            console.log('📦 Clientes recebidos do backend:', clientes);
-
             displayClientes();
         } catch (error) {
             console.error('Erro:', error);
@@ -178,20 +188,18 @@ document.addEventListener('DOMContentLoaded', () => {
     /** Aplica filtros de data e origem */
     const applyFilters = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/clientes/todos`, {
+            const response = await safeFetch(`${API_BASE_URL}/clientes/todos`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
             if (!response.ok) throw new Error('Erro ao buscar todos os clientes');
 
             let allClientes = await response.json();
 
-            // Filtro por origem
             const originFilter = safeLower(filterOriginInput.value);
             if (originFilter) {
                 allClientes = allClientes.filter(c => safeLower(c.origem).includes(originFilter));
             }
 
-            // Filtro por data
             const dateFilter = filterDateInput.value;
             if (dateFilter) {
                 allClientes = allClientes.filter(c => {
@@ -201,8 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            filteredClientes = allClientes; // Guarda clientes filtrados
-            currentPage = 1; // Reinicia a página ao aplicar filtro
+            filteredClientes = allClientes;
+            currentPage = 1;
 
             totalClientes = filteredClientes.length;
             totalVisualizados = filteredClientes.filter(c => safeLower(c.status) === 'visualizado').length;
@@ -236,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const abrirWhatsApp = async (link, id) => {
         try {
             window.open(link, '_blank');
-            const response = await fetch(`${API_BASE_URL}/clientes/${id}/visualizado`, {
+            const response = await safeFetch(`${API_BASE_URL}/clientes/${id}/visualizado`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
             });
@@ -253,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!confirm('Tem certeza que deseja deletar este cliente?')) return;
 
         try {
-            const response = await fetch(`${API_BASE_URL}/clientes/${id}`, {
+            const response = await safeFetch(`${API_BASE_URL}/clientes/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -274,7 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const downloadExcel = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/clientes/excel`, {
+            const response = await safeFetch(`${API_BASE_URL}/clientes/excel`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!response.ok) throw new Error('Erro ao buscar o arquivo');

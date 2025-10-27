@@ -1,4 +1,13 @@
 document.addEventListener("DOMContentLoaded", function () {
+
+    // 🔐 Verifica token logo no início
+    const token = localStorage.getItem('token');
+    if (!token) {
+        alert('Sessão expirada. Faça login novamente.');
+        window.location.href = 'login.html';
+        return;
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
     const nomeVendedor = urlParams.get('vendedor');
 
