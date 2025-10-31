@@ -607,7 +607,18 @@ function getGeoLocation() {
  * @param {string|null} vendedor - Nome do vendedor (origem).
  */
 
-async function enviarDadosCliente(name, phone, bill, role, status, vendedor, address = "", city = "", state = "", country = "") {
+async function enviarDadosCliente(
+    name,
+    phone,
+    bill,
+    role,
+    status,
+    vendedor,
+    address = "",
+    city = "",
+    state = "",
+    country = ""
+) {
     // Obtém o token do localStorage
     const token = localStorage.getItem('token');
     if (!token) {
@@ -658,10 +669,29 @@ async function enviarDadosCliente(name, phone, bill, role, status, vendedor, add
         if (response.ok) {
             console.log('✅ Dados do cliente enviados com sucesso:', responseData);
             alert('Cliente cadastrado com sucesso! Você será redirecionado para o painel.');
+
             // Atualiza a lista de clientes na página, se a função estiver disponível
             if (typeof fetchClientesComFiltro === "function") {
                 fetchClientesComFiltro();
             }
+
+            // 🔹 Enviar os dados para o Make somente se o backend deu certo
+            try {
+                const makeResponse = await fetch('https://hook.us1.make.com/34ggrx9kcjmbbivqjftba23qiuvd6qjq', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (makeResponse.ok) {
+                    console.log('✅ Dados enviados para o Make com sucesso!');
+                } else {
+                    console.warn('⚠️ Erro ao enviar dados para o Make:', await makeResponse.text());
+                }
+            } catch (err) {
+                console.error('🔥 Erro de rede ao enviar dados para o Make:', err);
+            }
+
         } else {
             console.error('❌ Erro ao enviar dados do cliente:', responseData);
             if (response.status === 500 || response.status === 409) {
