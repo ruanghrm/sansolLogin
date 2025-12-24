@@ -675,6 +675,7 @@ async function enviarDadosCliente(
                 fetchClientesComFiltro();
             }
 
+            /*
             // 🔹 Enviar os dados para o Make somente se o backend deu certo
             try {
                 const makeResponse = await fetch('https://hook.us1.make.com/34ggrx9kcjmbbivqjftba23qiuvd6qjq', {
@@ -691,6 +692,7 @@ async function enviarDadosCliente(
             } catch (err) {
                 console.error('🔥 Erro de rede ao enviar dados para o Make:', err);
             }
+            */
 
         } else {
             console.error('❌ Erro ao enviar dados do cliente:', responseData);
