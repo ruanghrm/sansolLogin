@@ -675,24 +675,26 @@ async function enviarDadosCliente(
                 fetchClientesComFiltro();
             }
 
-            /*
             // 🔹 Enviar os dados para o Make somente se o backend deu certo
-            try {
-                const makeResponse = await fetch('https://hook.us1.make.com/34ggrx9kcjmbbivqjftba23qiuvd6qjq', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+            if (role === "prospect") {
+                try {
+                    const makeResponse = await fetch('https://hook.us1.make.com/nrcnicc5ze6c377t17f2r1ixj6nuy68a', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
 
-                if (makeResponse.ok) {
-                    console.log('✅ Dados enviados para o Make com sucesso!');
-                } else {
-                    console.warn('⚠️ Erro ao enviar dados para o Make:', await makeResponse.text());
+                    if (makeResponse.ok) {
+                        console.log('✅ Dados enviados para o Make com sucesso!');
+                    } else {
+                        console.warn('⚠️ Erro ao enviar dados para o Make:', await makeResponse.text());
+                    }
+                } catch (err) {
+                    console.error('🔥 Erro de rede ao enviar dados para o Make:', err);
                 }
-            } catch (err) {
-                console.error('🔥 Erro de rede ao enviar dados para o Make:', err);
+            } else {
+                console.log(`🔹 Payload com role "${role}" não será enviado para o Make.`);
             }
-            */
 
         } else {
             console.error('❌ Erro ao enviar dados do cliente:', responseData);
