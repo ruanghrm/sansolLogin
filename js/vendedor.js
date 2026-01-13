@@ -606,7 +606,6 @@ function getGeoLocation() {
  * @param {string} bill - Valor da conta de luz.
  * @param {string|null} vendedor - Nome do vendedor (origem).
  */
-
 async function enviarDadosCliente(
     name,
     phone,
@@ -633,10 +632,12 @@ async function enviarDadosCliente(
         location = await getGeoLocation();
         console.log('🌍 Localização obtida:', location);
     } catch (error) {
-        console.warn(`Não foi possível obter a localização: ${error.message}. Continuando sem ela...`);
+        console.warn(
+            `Não foi possível obter a localização: ${error.message}. Continuando sem ela...`
+        );
     }
 
-    // Monta o payload de acordo com o novo endpoint
+    // Monta o payload
     const payload = {
         nome: name,
         numero: phone,
@@ -655,53 +656,99 @@ async function enviarDadosCliente(
     console.log('📦 Enviando dados para a API:', payload);
 
     try {
-        const response = await fetch('https://backend.sansolenergiasolar.com.br/api/v1/clientes', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(payload)
-        });
+        const response = await fetch(
+            'https://backend.sansolenergiasolar.com.br/api/v1/clientes',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            }
+        );
 
         const responseData = await response.json();
 
-        if (response.ok) {
-            console.log('✅ Dados do cliente enviados com sucesso:', responseData);
-            alert('Cliente cadastrado com sucesso! Você será redirecionado para o painel.');
-
-            // Atualiza a lista de clientes na página, se a função estiver disponível
-            if (typeof fetchClientesComFiltro === "function") {
-                fetchClientesComFiltro();
+        if (!response.ok) {
+            console.error('❌ Erro ao enviar dados do cliente:', responseData);
+            if (response.status === 500 || response.status === 409) {
+                alert(
+                    `Ocorreu um erro: ${
+                        responseData.error ||
+                        responseData.message ||
+                        'Tente novamente.'
+                    }`
+                );
             }
+            return;
+        }
 
-            // 🔹 Enviar os dados para o Make somente se o backend deu certo
+        console.log('✅ Dados do cliente enviados com sucesso:', responseData);
+        alert('Cliente cadastrado com sucesso! Você será redirecionado para o painel.');
+
+        if (typeof fetchClientesComFiltro === "function") {
+            fetchClientesComFiltro();
+        }
+
+        try {
+            // 🔹 Envio padrão para o Make (somente prospect)
             if (role === "prospect") {
-                try {
-                    const makeResponse = await fetch('https://hook.us1.make.com/nrcnicc5ze6c377t17f2r1ixj6nuy68a', {
+                const makeResponse = await fetch(
+                    'https://hook.us1.make.com/nrcnicc5ze6c377t17f2r1ixj6nuy68a',
+                    {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
-                    });
-
-                    if (makeResponse.ok) {
-                        console.log('✅ Dados enviados para o Make com sucesso!');
-                    } else {
-                        console.warn('⚠️ Erro ao enviar dados para o Make:', await makeResponse.text());
                     }
-                } catch (err) {
-                    console.error('🔥 Erro de rede ao enviar dados para o Make:', err);
+                );
+
+                if (makeResponse.ok) {
+                    console.log('✅ Dados enviados para o Make com sucesso!');
+                } else {
+                    console.warn(
+                        '⚠️ Erro ao enviar dados para o Make:',
+                        await makeResponse.text()
+                    );
                 }
-            } else {
-                console.log(`🔹 Payload com role "${role}" não será enviado para o Make.`);
             }
 
-        } else {
-            console.error('❌ Erro ao enviar dados do cliente:', responseData);
-            if (response.status === 500 || response.status === 409) {
-                alert(`Ocorreu um erro: ${responseData.error || responseData.message || 'Tente novamente.'}`);
+            // 🔹 Webhook 1 (independente do role)
+            const webhook1Users = [
+                "MARLINDA MAIA",
+                "IASMIM EVELIN RODRIGUES LIMA",
+                "VICTOR MORAES"
+            ];
+
+            if (webhook1Users.includes(name)) {
+                await fetch(
+                    'https://hook.us1.make.com/54uui6sctiqtz8sbuobpha86mjx3pvld',
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    }
+                );
+                console.log('✅ Dados enviados para o Webhook 1');
             }
+
+            // 🔹 Webhook 2 (independente do role)
+            if (name === "ANA CLAUDIA FILGUEIRA SILVA GONCALVES") {
+                await fetch(
+                    'https://hook.us1.make.com/pdphkiuxd2vykykky1mp4vbo428rhjsz',
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    }
+                );
+                console.log('✅ Dados enviados para o Webhook 2');
+            }
+
+        } catch (err) {
+            console.error('🔥 Erro de rede ao enviar dados para webhooks:', err);
         }
+
     } catch (error) {
         console.error('🔥 Erro de rede ao enviar dados do cliente:', error);
         alert('Ocorreu um erro de rede. Verifique sua conexão e tente novamente.');
