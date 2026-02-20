@@ -717,7 +717,8 @@ async function enviarDadosCliente(
             const webhook1Users = [
                 "MARLINDA MAIA",
                 "IASMIM EVELIN RODRIGUES LIMA",
-                "VICTOR MORAES"
+                "VICTOR MORAES",
+                "JHULIENE MACIEL"
             ];
 
             if (webhook1Users.includes(name)) {
@@ -733,7 +734,7 @@ async function enviarDadosCliente(
             }
 
             // 🔹 Webhook 2 (independente do role)
-            if (name === "ANA CLAUDIA FILGUEIRA SILVA GONCALVES") {
+            if (name === "Edson Claudio da Costa Silva") {
                 await fetch(
                     'https://hook.us1.make.com/pdphkiuxd2vykykky1mp4vbo428rhjsz',
                     {
