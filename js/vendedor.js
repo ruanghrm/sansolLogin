@@ -77,6 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const name = document.getElementById('name').value.trim();
         const phone = document.getElementById('phone').value.trim();
         const bill = document.getElementById('bill').value.trim();
+        const observacoes = document.getElementById('observacoes').value.trim();
 
         const phoneRegex = /^\(\d{2}\) 9\d{4}-\d{4}$/;
         if (!phoneRegex.test(phone)) {
@@ -567,12 +568,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // 4. Enviar dados para a API
         enviarDadosCliente(
-        name,
-        phone,
-        bill,
-        window.vendedorData.role,
-        window.vendedorData.status,
-        window.vendedorData.nome
+            name,
+            phone,
+            bill,
+            observacoes,               
+            window.vendedorData.role,
+            window.vendedorData.status,
+            window.vendedorData.nome
         );
 
         console.log('teste: ' + nomeVendedor);
@@ -610,6 +612,7 @@ async function enviarDadosCliente(
     name,
     phone,
     bill,
+    observacoes,
     role,
     status,
     vendedor,
@@ -643,6 +646,7 @@ async function enviarDadosCliente(
         numero: phone,
         contaLuz: bill,
         status: status,
+        observacoes: observacoes,
         origem: vendedor,
         role: role,
         latitude: location?.latitude || null,

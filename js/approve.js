@@ -117,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
             tr.innerHTML = `
             <td>${cliente.nome ?? '-'}</td>
             <td>${cliente.origem ?? '-'}</td>
+            <td>${cliente.observacoes ?? '-'}</td>
             <td>${cliente.numero ?? '-'}</td>
             <td>${valorConta}</td>
             <td>${dataCadastro}</td>
