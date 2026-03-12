@@ -719,12 +719,18 @@ async function enviarDadosCliente(
 
             // 🔹 Webhook 1 (independente do role)
             const webhook1Users = [
-                "MARLINDA MAIA",
                 "IASMIM EVELIN RODRIGUES LIMA",
                 "VICTOR MORAES",
                 "JHULIENE MACIEL"
             ];
 
+            // 🔹 Webhook 2 (independente do role)
+            const webhook2Users = [
+                "David Érik crispim silva",
+                "Antônio Alexandre Santos Beleza"
+            ];
+
+            // Webhook Geovana
             if (webhook1Users.includes(name)) {
                 await fetch(
                     'https://hook.us1.make.com/54uui6sctiqtz8sbuobpha86mjx3pvld',
@@ -737,8 +743,8 @@ async function enviarDadosCliente(
                 console.log('✅ Dados enviados para o Webhook 1');
             }
 
-            // 🔹 Webhook 2 (independente do role)
-            if (name === "Edson Claudio da Costa Silva") {
+            // Webhook Roberta
+            if (webhook2Users.includes(name)) {
                 await fetch(
                     'https://hook.us1.make.com/pdphkiuxd2vykykky1mp4vbo428rhjsz',
                     {
@@ -750,9 +756,9 @@ async function enviarDadosCliente(
                 console.log('✅ Dados enviados para o Webhook 2');
             }
 
-        } catch (err) {
-            console.error('🔥 Erro de rede ao enviar dados para webhooks:', err);
-        }
+            } catch (err) {
+                console.error('🔥 Erro de rede ao enviar dados para webhooks:', err);
+            }
 
     } catch (error) {
         console.error('🔥 Erro de rede ao enviar dados do cliente:', error);
